@@ -17,7 +17,8 @@ setup(
           'console_scripts': [
               'pytree = a301.scripts.pytree:main',
               'hdf4ls = a301.scripts.hdf4ls:main',
-              'modisheader = a301.scripts.modismeta_read:main'
+              'modisheader = a301.scripts.modismeta_read:main',
+              'killprocs = a301.scripts.killprocs:main'
           ]
     },
 )

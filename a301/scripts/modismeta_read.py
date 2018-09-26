@@ -7,12 +7,12 @@
 
   to run from the command line::
 
-    python -m a301.scripts.modismeta_read  level1b_file.hdf
+    modisheader  level1b_file.hdf
 
   to run from a python script::
 
     from a301.scripts.modismeta_read import parseMeta
-    out=parseMeta(hdf_file)
+    out=parseMeta(level1b_file)
 """
 from __future__ import print_function
 
@@ -177,17 +177,17 @@ def make_parser():
     linebreaks = argparse.RawTextHelpFormatter
     parser = argparse.ArgumentParser(
         formatter_class=linebreaks, description=__doc__.lstrip())
-    parser.add_argument('h4_file', type=str, help='name of h4 file')
+    parser.add_argument('level1b_file', type=str, help='name of level1b hdf4 file')
     return parser
 
 def main(args=None):
     """
     args: optional -- if missing then args will be taken from command line
-          or pass [h4_file] -- list with name of h4_file to open
+          or pass [level1b_file] -- list with name of level1b_file to open
     """
     parser = make_parser()
     parsed_args = parser.parse_args(args)
-    filename = str(Path(parsed_args.h4_file).resolve())
+    filename = str(Path(parsed_args.level1b_file).resolve())
     out=parseMeta(filename)
     pprint.pprint(out)
 

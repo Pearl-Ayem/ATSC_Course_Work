@@ -291,7 +291,7 @@ print(f'scale: {ch30_scale}, offset: {ch30_offset}')
 ch30_calibrated =(ch30_data - ch30_offset)*ch30_scale
 
 
-# In[21]:
+# In[25]:
 
 
 fig,ax = plt.subplots(1,1,figsize = (10,14))
@@ -304,13 +304,14 @@ ax.set_title('Channel 30 radiance')
 out=cax.ax.set_ylabel('Chan radiance $(W\,m^{-2}\,\mu m^{-1}\,sr^{-1})$')
 out.set_verticalalignment('bottom')
 out.set_rotation(270)
+ch30_calibrated.shape
 
 
 # # Write the calibrated channel out for safekeeping
 # 
 # Follow the example here: https://hdfeos.org/software/pyhdf.php
 
-# In[24]:
+# In[22]:
 
 
 # Create an HDF file
@@ -342,7 +343,7 @@ sds.endaccess()
 sd.end()
 
 
-# In[26]:
+# In[23]:
 
 
 get_ipython().system('ls')
@@ -350,7 +351,7 @@ get_ipython().system('ls')
 
 # # Move the file to data_dir
 
-# In[23]:
+# In[24]:
 
 
 local_file = Path.cwd() / Path(outname)
