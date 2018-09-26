@@ -1,6 +1,6 @@
 """
   a301.scripts.modismeta_read 
-  ________________________
+  ___________________________
 
   parses a Modis Level1b CoreMetata.0 string and extracts
   a dictionary. 
