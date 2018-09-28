@@ -19,4 +19,20 @@ if not __version_file__.is_file():
 else:
     with open(__version_file__) as f:
         __version__=f.read().strip()
+#
+# define two Path variables to help navigate the folder tree
+# notebooks_dir and data_dir
+#
+path=Path(__file__).resolve()
+notebooks_dir = path.parent.parent / Path('notebooks')
+if not notebooks_dir.is_dir():
+    raise ValueError(f"missing folder {notebbooks_dir}")
+data_dir = path.parent.parent / Path('data')
+if data_dir.is_dir():
+    print(f'\ndata directory a301.data_dir = {data_dir}\n')
+else:
+    data_dir=None
+    
+
+
 

@@ -18,7 +18,8 @@ setup(
               'pytree = a301.scripts.pytree:main',
               'hdf4ls = a301.scripts.hdf4ls:main',
               'modisheader = a301.scripts.modismeta_read:main',
-              'killprocs = a301.scripts.killprocs:main'
+              'killprocs = a301.scripts.killprocs:main',
+              'a301version = a301.scripts.a301version:main'
           ]
     },
 )
