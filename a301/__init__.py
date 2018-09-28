@@ -28,9 +28,7 @@ notebooks_dir = path.parent.parent / Path('notebooks')
 if not notebooks_dir.is_dir():
     raise ValueError(f"missing folder {notebbooks_dir}")
 data_dir = path.parent.parent / Path('data')
-if data_dir.is_dir():
-    print(f'\ndata directory a301.data_dir = {data_dir}\n')
-else:
+if not data_dir.is_dir():
     data_dir=None
     
 

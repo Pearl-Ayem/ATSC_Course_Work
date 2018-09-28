@@ -31,6 +31,7 @@ def main(args=None):
     args = parser.parse_args(args)
     import a301
     print(f'a301 version - {a301.__version__}\n')
+    print(f'data_dir is {a301.data_dir}\n')
 
 if __name__ == "__main__":
     #
