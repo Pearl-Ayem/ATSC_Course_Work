@@ -2,7 +2,7 @@
 # coding: utf-8
 
 # <h1>Table of Contents<span class="tocSkip"></span></h1>
-# <div class="toc"><ul class="toc-item"><li><span><a href="#Use-pyresample-to-make-a-projected-image" data-toc-modified-id="Use-pyresample-to-make-a-projected-image-1"><span class="toc-item-num">1&nbsp;&nbsp;</span>Use pyresample to make a projected image</a></span></li><li><span><a href="#Read-the-lons/lats-from-the-MYD03-file" data-toc-modified-id="Read-the-lons/lats-from-the-MYD03-file-2"><span class="toc-item-num">2&nbsp;&nbsp;</span>Read the lons/lats from the MYD03 file</a></span></li><li><span><a href="#get-the-map-projection-from-corners.json" data-toc-modified-id="get-the-map-projection-from-corners.json-3"><span class="toc-item-num">3&nbsp;&nbsp;</span>get the map projection from corners.json</a></span></li><li><span><a href="#Use-pyresample-to-define-a-new-grid-in-this-projection" data-toc-modified-id="Use-pyresample-to-define-a-new-grid-in-this-projection-4"><span class="toc-item-num">4&nbsp;&nbsp;</span>Use pyresample to define a new grid in this projection</a></span></li><li><span><a href="#resample-the-longitudes-on-this-grid" data-toc-modified-id="resample-the-longitudes-on-this-grid-5"><span class="toc-item-num">5&nbsp;&nbsp;</span>resample the longitudes on this grid</a></span></li><li><span><a href="#replace-missing-values-with-floating-point-nan" data-toc-modified-id="replace-missing-values-with-floating-point-nan-6"><span class="toc-item-num">6&nbsp;&nbsp;</span>replace missing values with floating point nan</a></span></li><li><span><a href="#Plot-the-image-using-cartopy" data-toc-modified-id="Plot-the-image-using-cartopy-7"><span class="toc-item-num">7&nbsp;&nbsp;</span>Plot the image using cartopy</a></span></li><li><span><a href="#use-the-stored-data-to-make-a-new-map" data-toc-modified-id="use-the-stored-data-to-make-a-new-map-8"><span class="toc-item-num">8&nbsp;&nbsp;</span>use the stored data to make a new map</a></span><ul class="toc-item"><li><span><a href="#Thumbnail-for-comparison" data-toc-modified-id="Thumbnail-for-comparison-8.1"><span class="toc-item-num">8.1&nbsp;&nbsp;</span>Thumbnail for comparison</a></span></li></ul></li></ul></div>
+# <div class="toc"><ul class="toc-item"><li><span><a href="#Use-pyresample-to-make-a-projected-image" data-toc-modified-id="Use-pyresample-to-make-a-projected-image-1"><span class="toc-item-num">1&nbsp;&nbsp;</span>Use pyresample to make a projected image</a></span></li><li><span><a href="#Read-the-lons/lats-from-the-MYD03-file" data-toc-modified-id="Read-the-lons/lats-from-the-MYD03-file-2"><span class="toc-item-num">2&nbsp;&nbsp;</span>Read the lons/lats from the MYD03 file</a></span></li><li><span><a href="#get-the-map-projection-from-corners.json" data-toc-modified-id="get-the-map-projection-from-corners.json-3"><span class="toc-item-num">3&nbsp;&nbsp;</span>get the map projection from corners.json</a></span></li><li><span><a href="#Use-pyresample-to-define-a-new-grid-in-this-projection" data-toc-modified-id="Use-pyresample-to-define-a-new-grid-in-this-projection-4"><span class="toc-item-num">4&nbsp;&nbsp;</span>Use pyresample to define a new grid in this projection</a></span></li><li><span><a href="#resample-the-longitudes-on-this-grid" data-toc-modified-id="resample-the-longitudes-on-this-grid-5"><span class="toc-item-num">5&nbsp;&nbsp;</span>resample the longitudes on this grid</a></span></li><li><span><a href="#replace-missing-values-with-floating-point-nan" data-toc-modified-id="replace-missing-values-with-floating-point-nan-6"><span class="toc-item-num">6&nbsp;&nbsp;</span>replace missing values with floating point nan</a></span></li><li><span><a href="#Plot-the-image-using-cartopy" data-toc-modified-id="Plot-the-image-using-cartopy-7"><span class="toc-item-num">7&nbsp;&nbsp;</span>Plot the image using cartopy</a></span></li></ul></div>
 
 # # Use pyresample to make a projected image
 # 
@@ -89,9 +89,15 @@ swath_def = SwathDefinition(lons, lats)
 area_def=swath_def.compute_optimal_bb_area(proj_dict=proj_params)
 
 
+# In[6]:
+
+
+dir(area_def)
+
+
 # # resample the longitudes on this grid
 
-# In[6]:
+# In[7]:
 
 
 fill_value=-9999.
@@ -106,7 +112,7 @@ print((f'\nx and y pixel dimensions in meters:'
 
 # # replace missing values with floating point nan
 
-# In[7]:
+# In[8]:
 
 
 nan_value = np.array([np.nan],dtype=np.float32)[0]
@@ -115,7 +121,7 @@ image_lons[image_lons< -9000]=nan_value
 
 # # Plot the image using cartopy
 
-# In[8]:
+# In[9]:
 
 
 crs = area_def.to_cartopy_crs()
@@ -124,4 +130,10 @@ ax.coastlines()
 ax.set_global()
 plt.imshow(image_lons, transform=crs, extent=crs.bounds, origin='upper')
 plt.colorbar();
+
+
+# In[27]:
+
+
+crs.globe.to_proj4_params()
 

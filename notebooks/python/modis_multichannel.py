@@ -29,8 +29,11 @@ from pyhdf.SD import SD, SDC
 import pprint
 import numpy as np
 from matplotlib import pyplot as plt
-import context
 from a301.utils.data_read import download
+import a301
+import shutil
+from a301.scripts.modismeta_read import parseMeta
+import pdb
 
 
 # # Introduction
@@ -46,21 +49,24 @@ from a301.utils.data_read import download
 #      
 #      
 
-# In[19]:
+# In[2]:
 
+
+modis_file="MYD021KM.A2013222.2105.061.2018047235850.hdf"
+generic_m2 = a301.data_dir / Path('myd02_2018_9_5.hdf')
 
 get_data=False
 if get_data:
-    modis_file="MYD021KM.A2013222.2110.061.2018047235850.hdf"
     download(modis_file)
-    #
-    # now move this from the notebooks folder to the data folder
-    #
+if generic_m2.is_file():
+    print(f"found {generic_m2}, won't copy")
+else:
+    shutil.copy(modis_file,generic_m2)
+m2_metadata=parseMeta(generic_m2)
+m2_filename_str = m2_metadata['filename']
+print(f"working with {m2_filename_str}")
     
-#Path.cwd finds the "current working directory"
-this_dir=Path.cwd()
-#move up one one folder and down to data
-data_dir = this_dir.parent / Path('data')
+    
 
 
 # # Reading modis data
@@ -82,11 +88,7 @@ data_dir = this_dir.parent / Path('data')
 # In[3]:
 
 
-hdf_files=list(data_dir.glob("MYD021KM*2110*.hdf"))
-hdf_files
-file_name = str(data_dir / Path(hdf_files[0]))
-print(f'reading {file_name}')
-the_file = SD(file_name, SDC.READ)
+the_file = SD(str(generic_m2), SDC.READ)
 stars='*'*50
 print((f'\n{stars}\nnumber of datasets, number of attributes'
        f'={the_file.info()}\n{stars}\n'
@@ -262,13 +264,14 @@ print(f'ch31 scale: {ch31_scale}, ch31 offset: {ch31_offset}')
 
 ch30_calibrated =(ch30_data - ch30_offset)*ch30_scale
 ch31_calibrated =(ch31_data - ch31_offset)*ch31_scale
+the_file.end()
 
 
 # # Write the calibrated channel out for safekeeping
 # 
 # Follow the example here: https://hdfeos.org/software/pyhdf.php
 
-# In[17]:
+# In[21]:
 
 
 def write_chan(sd,numpy_array,chan_name):
@@ -277,46 +280,39 @@ def write_chan(sd,numpy_array,chan_name):
     string channel name, write the channel out to the sd
     """
     # Create a dataset
-    sds = sd.create(chan_name, SDC.FLOAT64, ch30_calibrated.shape)
+    sds = sd.create(chan_name, SDC.FLOAT64, numpy_array.shape)
 
     # Fill the dataset with a fill value
     sds.setfillvalue(0)
-
-    # Set dimension names
-    dim1 = sds.dim(0)
-    dim1.setname("row")
-    dim2 = sds.dim(1)
-    dim2.setname("col")
-
+    
     # Assign an attribute to the dataset
     sds.units = "W/m^2/micron/sr"
 
     # Write data
-    sds[:,:] = numpy_array
+    sds[:,:] = numpy_array[:,:]
 
     # Close the dataset
     sds.endaccess()
 
 # Create an HDF file
-outname="modis_chans.hdf"
-sd = SD(outname, SDC.WRITE | SDC.CREATE)
+outname= a301.data_dir / Path("modis_chans_2018_9_24.hdf")
+sdout = SD(str(outname), SDC.WRITE | SDC.CREATE)
 
 #
 # write out two channels
 #
-write_chan(sd,ch30_calibrated,'ch30')
-write_chan(sd,ch31_calibrated,'ch31')
+write_chan(sdout,ch30_calibrated,'ch30')
+write_chan(sdout,ch31_calibrated,'ch31')
 
 # Flush and close the HDF file
-sd.end()
+sdout.filename=m2_filename_str
+sdout.comment="written by modis_multichannel.ipynb"
+sdout.end()
 
 
-# # Move the file to data_dir
-
-# In[18]:
+# In[23]:
 
 
-local_file = Path.cwd() / Path(outname)
-to_file = data_dir / Path(outname)
-local_file.rename(to_file)
+from a301.scripts import hdf4ls
+hdf4ls.hdf4ls(str(outname))
 

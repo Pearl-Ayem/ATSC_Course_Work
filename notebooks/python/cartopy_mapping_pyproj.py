@@ -12,6 +12,13 @@
 # In[1]:
 
 
+import a301
+print(a301.data_dir)
+
+
+# In[2]:
+
+
 from context import data_dir
 import json
 from a301.utils.data_read import download
@@ -26,7 +33,7 @@ if read_data:
     local_file.rename(to_file)  
 
 
-# In[2]:
+# In[3]:
 
 
 import cartopy.crs as ccrs
@@ -38,7 +45,7 @@ import numpy as np
 #
 
 
-# In[3]:
+# In[4]:
 
 
 # Datum: radius of the earth in meters
@@ -63,7 +70,7 @@ globe = ccrs.Globe(ellipse=None, semimajor_axis=radius,
 
 # ### Find the image corners using parseMeta
 
-# In[4]:
+# In[5]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -76,7 +83,7 @@ modis_dict=parseMeta(modis_file)
 
 # ### Make an LAEA projection using the spherical globe
 
-# In[5]:
+# In[6]:
 
 
 pprint.pprint(modis_dict)
@@ -86,13 +93,13 @@ projection=ccrs.LambertAzimuthalEqualArea(central_latitude=modis_dict['lat_0'],
 
 # ### Here are the parameters cartopy is using to call pyproj
 
-# In[6]:
+# In[7]:
 
 
 projection.proj4_params
 
 
-# In[7]:
+# In[8]:
 
 
 projection.proj4_init
@@ -103,7 +110,7 @@ projection.proj4_init
 # Show that we can "roundtrip" the coordinates -- i.e. go from lon,lat to x,y to lon, lat
 # and get the starting values back
 
-# In[8]:
+# In[9]:
 
 
 import pyproj
@@ -122,13 +129,13 @@ pprint.pprint(list(zip(llcrnrlon,llcrnrlat)))
 # 
 # **Note that changing to this datum makes a difference of about 3 km, (i.e. 1558 km becomes 1561 km below)**
 
-# In[9]:
+# In[10]:
 
 
 globe_w = ccrs.Globe(datum="WGS84",ellipse="WGS84")
 
 
-# In[10]:
+# In[11]:
 
 
 projection_w=ccrs.LambertAzimuthalEqualArea(central_latitude=modis_dict['lat_0'],
@@ -151,7 +158,7 @@ pprint.pprint(list(zip(llcrnrlon,llcrnrlat)))
 # 
 # **First do it with cartopy:**
 
-# In[11]:
+# In[12]:
 
 
 geodetic = ccrs.Geodetic()
@@ -161,7 +168,7 @@ print(van_point)
 
 # **now do it with pyproj to show result doesn't change:**
 
-# In[12]:
+# In[13]:
 
 
 geodetic_prj = pyproj.Proj(geodetic.proj4_init)
@@ -172,7 +179,7 @@ van_x, van_y = van_point_prj
 
 # ### Note that the scene center is 0,0 in the transformed coordinates
 
-# In[13]:
+# In[14]:
 
 
 center_point = projection_w.transform_point(modis_dict['lon_0'],modis_dict['lat_0'],geodetic)
@@ -181,7 +188,7 @@ print(center_point)
 
 # ### To set the extent for the plot, find the x,y mins and maxes
 
-# In[14]:
+# In[15]:
 
 
 minx,maxx=np.min(x_w84),np.max(x_w84)
@@ -198,7 +205,7 @@ extent=[minx, maxx, miny, maxy]
 #     
 # to redisplay the figure.
 
-# In[15]:
+# In[16]:
 
 
 fig, ax = plt.subplots(1, 1, figsize=(10,10),
@@ -209,7 +216,7 @@ ax.plot(van_x,van_y,'ro',markersize=10);
 
 # **Next add coastlines**
 
-# In[16]:
+# In[17]:
 
 
 ax.gridlines(linewidth=2)
@@ -219,7 +226,7 @@ display(fig)
 
 # **now get the corner points of the image and plot the box with center point**
 
-# In[17]:
+# In[18]:
 
 
 out=projection_w.transform_points(geodetic,np.array(modis_dict['lon_list']),
@@ -237,7 +244,7 @@ display(fig)
 # 
 # (note that json doesn't understand numpy arrays, so need to convert them to python lists)
 
-# In[18]:
+# In[19]:
 
 
 xcoords=list(xcoords)
@@ -246,6 +253,7 @@ corner_dict = dict(xcoords=xcoords, ycoords=ycoords)
 llcrnrlon,llcrnrlat=prj_w(xcoords,ycoords,inverse=True)
 lons=list(llcrnrlon)
 lats=list(llcrnrlat)
+corner_dict['filename']=modis_dict['filename']
 corner_dict['lons']=lons
 corner_dict['lats']=lats
 corner_dict['proj4_string']=projection_w.proj4_init
@@ -254,7 +262,7 @@ corner_dict['extent']=extent
 pprint.pprint(corner_dict)
 
 
-# In[19]:
+# In[20]:
 
 
 corner_output = a301.data_dir / Path('corners.json')
@@ -314,7 +322,7 @@ with open(corner_output,'w') as f:
 
 # ### Use [pyproj.geoid](https://jswhit.github.io/pyproj/pyproj.Geod-class.html) to get distance between points
 
-# In[20]:
+# In[21]:
 
 
 from pyproj import Geod
@@ -327,14 +335,14 @@ az1,az2,ew_dist=g.inv(bottom_left[0],bottom_left[1],bottom_right[0],bottom_right
 az3,az4,ns_dist=g.inv(bottom_left[0],bottom_left[1],top_left[0],top_left[1])
 
 
-# In[21]:
+# In[22]:
 
 
 print((f'east-west distance is {ew_dist*1.e-3:8.3f} km,'
        f'\nnorth-south distance is {ns_dist*1.e-3:8.3f} km'))
 
 
-# In[22]:
+# In[23]:
 
 
 points_xy=list(zip(xcoords,ycoords))
@@ -343,7 +351,7 @@ bottom_left_x, bottom_left_y = points_xy[1]
 top_left_x, top_left_y = points_xy[2]
 
 
-# In[23]:
+# In[24]:
 
 
 ew_dist=(bottom_right_x-bottom_left_x)
