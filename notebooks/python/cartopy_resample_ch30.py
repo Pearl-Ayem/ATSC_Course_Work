@@ -2,7 +2,7 @@
 # coding: utf-8
 
 # <h1>Table of Contents<span class="tocSkip"></span></h1>
-# <div class="toc"><ul class="toc-item"><li><span><a href="#Use-pyresample-to-plot-channel-30-radiances" data-toc-modified-id="Use-pyresample-to-plot-channel-30-radiances-1"><span class="toc-item-num">1&nbsp;&nbsp;</span>Use pyresample to plot channel 30 radiances</a></span></li><li><span><a href="#Read-the-lons/lats-from-the-MYD03-file" data-toc-modified-id="Read-the-lons/lats-from-the-MYD03-file-2"><span class="toc-item-num">2&nbsp;&nbsp;</span>Read the lons/lats from the MYD03 file</a></span></li><li><span><a href="#get-the-map-projection-from-corners.json" data-toc-modified-id="get-the-map-projection-from-corners.json-3"><span class="toc-item-num">3&nbsp;&nbsp;</span>get the map projection from corners.json</a></span></li><li><span><a href="#Use-pyresample-to-define-a-new-grid-in-this-projection" data-toc-modified-id="Use-pyresample-to-define-a-new-grid-in-this-projection-4"><span class="toc-item-num">4&nbsp;&nbsp;</span>Use pyresample to define a new grid in this projection</a></span></li><li><span><a href="#resample-ch30-on-this-grid" data-toc-modified-id="resample-ch30-on-this-grid-5"><span class="toc-item-num">5&nbsp;&nbsp;</span>resample ch30 on this grid</a></span></li><li><span><a href="#replace-missing-values-with-floating-point-nan" data-toc-modified-id="replace-missing-values-with-floating-point-nan-6"><span class="toc-item-num">6&nbsp;&nbsp;</span>replace missing values with floating point nan</a></span></li><li><span><a href="#Plot-the-image-using-cartopy" data-toc-modified-id="Plot-the-image-using-cartopy-7"><span class="toc-item-num">7&nbsp;&nbsp;</span>Plot the image using cartopy</a></span></li></ul></div>
+# <div class="toc"><ul class="toc-item"><li><span><a href="#Use-pyresample-to-plot-channel-30-radiances" data-toc-modified-id="Use-pyresample-to-plot-channel-30-radiances-1"><span class="toc-item-num">1&nbsp;&nbsp;</span>Use pyresample to plot channel 30 radiances</a></span></li><li><span><a href="#Read-the-lons/lats-from-the-MYD03-file" data-toc-modified-id="Read-the-lons/lats-from-the-MYD03-file-2"><span class="toc-item-num">2&nbsp;&nbsp;</span>Read the lons/lats from the MYD03 file</a></span></li><li><span><a href="#get-the-map-projection-from-a301.geometry.get_proj_params" data-toc-modified-id="get-the-map-projection-from-a301.geometry.get_proj_params-3"><span class="toc-item-num">3&nbsp;&nbsp;</span>get the map projection from a301.geometry.get_proj_params</a></span></li><li><span><a href="#Use-pyresample-to-define-a-new-grid-in-this-projection" data-toc-modified-id="Use-pyresample-to-define-a-new-grid-in-this-projection-4"><span class="toc-item-num">4&nbsp;&nbsp;</span>Use pyresample to define a new grid in this projection</a></span></li><li><span><a href="#resample-ch30-on-this-grid" data-toc-modified-id="resample-ch30-on-this-grid-5"><span class="toc-item-num">5&nbsp;&nbsp;</span>resample ch30 on this grid</a></span></li><li><span><a href="#replace-missing-values-with-floating-point-nan" data-toc-modified-id="replace-missing-values-with-floating-point-nan-6"><span class="toc-item-num">6&nbsp;&nbsp;</span>replace missing values with floating point nan</a></span></li><li><span><a href="#Plot-the-image-using-cartopy" data-toc-modified-id="Plot-the-image-using-cartopy-7"><span class="toc-item-num">7&nbsp;&nbsp;</span>Plot the image using cartopy</a></span></li></ul></div>
 
 # # Use pyresample to plot channel 30 radiances
 # 
@@ -118,18 +118,47 @@ ch30 = rad_file.select('ch30').get()
 rad_file.end()
 
 
-# # get the map projection from corners.json
+# # get the map projection from a301.geometry.get_proj_params
 # 
-# Get the map  projection and extent from corners.json that were written
-# by cartopy_mapping_pyproject.ipynb
+# pyresample needs proj4 map parameters to put together its grid.  These are
+# returned by the get_proj_params file below.  It is available in version 0.0.5 of the a301 library.
 
 # In[6]:
 
 
-json_file = a301.data_dir / Path('corners.json')
-with open(json_file,'r') as f:
-    map_dict=json.load(f)
-pprint.pprint(map_dict)
+def get_proj_params(modis_file):
+    """
+    given a path to a Modis level1b file with a standard
+    'CoreMetadata.0' atrribute, return proj4 parameters
+    for use by cartopy or pyresample, assuming a laea projection
+    and WGS84 datum
+    
+    Parameters
+    ----------
+    
+    modis_file:  Path or str with path to hdf file
+    
+    Returns
+    -------
+    
+    proj_params: dict
+        dict with parameters for proj4
+        
+    """
+    modis_dict=parseMeta(modis_file)
+    import cartopy.crs as ccrs
+    globe_w = ccrs.Globe(datum="WGS84",ellipse="WGS84")
+    projection_w=ccrs.LambertAzimuthalEqualArea(central_latitude=modis_dict['lat_0'],
+                    central_longitude= modis_dict['lon_0'],globe=globe_w)
+    proj_params=projection_w.proj4_params
+    return proj_params  
+
+
+# In[15]:
+
+
+from a301.geometry import get_proj_params
+get_proj_params(generic_m3)
 
 
 # # Use pyresample to define a new grid in this projection
@@ -138,20 +167,20 @@ pprint.pprint(map_dict)
 
 
 from pyresample import load_area, save_quicklook, SwathDefinition
-proj_params = map_dict['proj4_params']
+proj_params = get_proj_params(generic_m3)
 swath_def = SwathDefinition(lons, lats)
 area_def=swath_def.compute_optimal_bb_area(proj_dict=proj_params)
 
 
-# In[8]:
+# In[12]:
 
 
-dir(area_def)
+area_def
 
 
 # # resample ch30 on this grid
 
-# In[9]:
+# In[8]:
 
 
 fill_value=-9999.
@@ -166,7 +195,7 @@ print((f'\nx and y pixel dimensions in meters:'
 
 # # replace missing values with floating point nan
 
-# In[10]:
+# In[9]:
 
 
 nan_value = np.array([np.nan],dtype=np.float32)[0]
@@ -175,7 +204,7 @@ image_30[image_30< -9000]=nan_value
 
 # # Plot the image using cartopy
 
-# In[11]:
+# In[10]:
 
 
 pal = plt.get_cmap('plasma')
@@ -188,7 +217,7 @@ from matplotlib.colors import Normalize
 the_norm=Normalize(vmin=vmin,vmax=vmax,clip=False)
 
 
-# In[12]:
+# In[11]:
 
 
 crs = area_def.to_cartopy_crs()
