@@ -27,3 +27,25 @@ def get_proj_params(modis_file):
                     central_longitude= modis_dict['lon_0'],globe=globe_w)
     proj_params=projection_w.proj4_params
     return proj_params
+
+def make_projection(proj_params):
+    """
+    turn a set of proj4 parameters into a cartopy laea projection
+    
+    Parameters
+    ----------
+    
+    proj_params: dict
+       dictionary with parameters lat_0, lon_0 datum and ellps
+       
+    Returns
+    -------
+    
+    cartopy projection object
+    
+    """
+    import cartopy.crs as ccrs
+    globe_w = ccrs.Globe(datum=proj_params["datum"],ellipse=proj_params['ellps'])
+    projection_w=ccrs.LambertAzimuthalEqualArea(central_latitude=float(proj_params['lat_0']),
+                    central_longitude= float(proj_params['lon_0']),globe=globe_w)
+    return projection_w

@@ -27,9 +27,12 @@ path=Path(__file__).resolve()
 notebooks_dir = path.parent.parent / Path('notebooks')
 if not notebooks_dir.is_dir():
     raise ValueError(f"missing folder {notebbooks_dir}")
-data_dir = path.parent.parent / Path('data')
+root_dir = path.parent.parent
+data_dir = root_dir / Path('data')
+test_dir = root_dir / Path('test_data')
 if not data_dir.is_dir():
-    data_dir=None
+    raise ValueError("You need to create the folder {data_dir}")
+
     
 
 

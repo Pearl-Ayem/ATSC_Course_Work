@@ -291,7 +291,7 @@ sdout.comment="written by modis_multichannel.ipynb"
 sdout.end()
 
 
-# In[18]:
+# In[17]:
 
 
 from a301.scripts import hdf4ls
