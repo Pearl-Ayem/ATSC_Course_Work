@@ -39,7 +39,12 @@ def hdf4ls(filename):
     datasets_dict = the_file.datasets()
     print(f'\n{stars}\nHere are the datasets\n{stars}\n')
     for idx,sds in enumerate(datasets_dict.keys()):
-        print(idx,sds)
+        out=the_file.select(sds)
+        dims = [item for item in out.dimensions().values()]
+        print(f'{stars}\n') 
+        print(idx,sds,dims)
+        pprint.pprint(out.attributes().keys())
+        print(f'{stars}\n\n') 
 
     print(f'\n{stars}\nHere are the truncated global attributes\n{stars}\n')
     for key, value in the_file.attributes().items():

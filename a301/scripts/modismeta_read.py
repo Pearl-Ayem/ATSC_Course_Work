@@ -15,8 +15,9 @@
     out=parseMeta(level1b_file)
 """
 from __future__ import print_function
-
+import pprint
 import types
+import pdb
 import numpy as np
 import argparse
 from pathlib import Path
@@ -24,85 +25,83 @@ from pyhdf.SD import SD, SDC
 import sys
 import pprint
 
+
+def read_mda(attribute):
+    lines = attribute.split('\n')
+    mda = {}
+    current_dict = mda
+    path = []
+    for line in lines:
+        if not line:
+            continue
+        if line.strip() == 'END':
+            break
+        try:
+            key, val = line.split('=')
+        except ValueError:
+            continue
+        key = key.strip()
+        val = val.strip()
+        try:
+            val = eval(val)
+        except (NameError,SyntaxError,ValueError) as e:
+            pass
+        if key in ['GROUP', 'OBJECT']:
+            new_dict = {}
+            path.append(val)
+            current_dict[val] = new_dict
+            current_dict = new_dict
+        elif key in ['END_GROUP', 'END_OBJECT']:
+            if val != path[-1]:
+                raise SyntaxError
+            path = path[:-1]
+            current_dict = mda
+            for item in path:
+                current_dict = current_dict[item]
+        elif key in ['CLASS', 'NUM_VAL']:
+            pass
+        else:
+            current_dict[key] = val
+    return mda
+    
+    
 class metaParse:
     def __init__(self,metaDat):
         import re
         self.metaDat=str(metaDat).rstrip(' \t\r\n\0')
-        #search for the string following the words "VALUE= "
-        self.stringObject=\
-             re.compile('.*VALUE\s+=\s"(?P<value>.*)"',re.DOTALL)
-        #search for a string that looks like 11:22:33
-        self.timeObject=\
-             re.compile('.*(?P<time>\d{2}\:\d{2}\:\d{2}).*',re.DOTALL)
-        #search for a string that looks like 2006-10-02
-        self.dateObject=\
-             re.compile('.*(?P<date>\d{4}-\d{2}-\d{2}).*',\
-                        re.DOTALL)
-        #search for a string that looks like "(anything between parens)"
-        self.coordObject=re.compile('.*\((?P<coord>.*)\)',re.DOTALL)
-        #search for a string that looks like "1234"
-        self.orbitObject=\
-             re.compile('.*VALUE\s+=\s(?P<orbit>\d+)\n',re.DOTALL)
-
-    def getstring(self,theName):
-        theString=self.metaDat.split(theName)
-        theString = [str(item) for item in theString]
-        #should break into three pieces, we want middle
-        out=[item[:50] for item in theString]
-        if len(theString) ==3:
-            theString=theString[1]
-        return theString
-        
-
-    def __call__(self,theName):
-        if theName=='CORNERS':
-            import string
-            #look for the corner coordinates by searching for
-            #the GRINGPOINTLATITUDE and GRINGPOINTLONGITUDE keywords
-            #and then matching the values inside two round parenthesis
-            #using the coord regular expression
-            theString= self.getstring('GRINGPOINTLATITUDE')
-            theMatch=self.coordObject.match(theString)
-            theLats=theMatch.group('coord').split(',')
-            theLats=[float(item) for item in theLats]
-            theString= self.getstring('GRINGPOINTLONGITUDE')
-            theMatch=self.coordObject.match(theString)
-            theLongs=theMatch.group('coord').split(',')
-            theLongs=[float(item) for item in theLongs]
-            lon_list,lat_list = np.array(theLongs),np.array(theLats)
-            min_lat,max_lat=np.min(lat_list),np.max(lat_list)
-            min_lon,max_lon=np.min(lon_list),np.max(lon_list)
-            lon_0 = (max_lon + min_lon)/2.
-            lat_0 = (max_lat + min_lat)/2.
-            corner_dict = dict(lon_list=lon_list,lat_list=lat_list,
-                               min_lat=min_lat,max_lat=max_lat,min_lon=min_lon,
-                               max_lon=max_lon,lon_0=lon_0,lat_0=lat_0)
-            value=corner_dict
-        #regular value
+        self.meta_dict = read_mda(self.metaDat)
+        the_dict=self.meta_dict['INVENTORYMETADATA']
+        product=the_dict['COLLECTIONDESCRIPTIONCLASS']['SHORTNAME']['VALUE']
+        L2 = product.find('L2') > -1
+        if L2:
+            rectangle=the_dict[ 'SPATIALDOMAINCONTAINER']['HORIZONTALSPATIALDOMAINCONTAINER']['BOUNDINGRECTANGLE']
+            left_lon=rectangle['WESTBOUNDINGCOORDINATE']['VALUE']
+            right_lon=rectangle['EASTBOUNDINGCOORDINATE']['VALUE']
+            top_lat=rectangle['NORTHBOUNDINGCOORDINATE']['VALUE']
+            bot_lat=rectangle['SOUTHBOUNDINGCOORDINATE']['VALUE']
+            theLongs=[bot_lat,bot_lat,top_lat,top_lat]  #ccw from lower right
+            theLats=[right_lon,left_lon,left_lon,right_lon]
         else:
-            theString= self.getstring(theName)
-            #orbitnumber doesn't have quotes
-            if theName=='ORBITNUMBER':
-                theMatch=self.orbitObject.match(theString)
-                if theMatch:
-                    value=theMatch.group('orbit')
-                else:
-                    raise Exception("couldn't fine ORBITNUMBER")
-            #expect quotes around anything else:
-            else:
-                theMatch=self.stringObject.match(theString)
-                if theMatch:
-                    value=theMatch.group('value')
-                    theDate=self.dateObject.match(value)
-                    if theDate:
-                        value=theDate.group('date') + " UCT"
-                    else:
-                        theTime=self.timeObject.match(value)
-                        if theTime:
-                            value=theTime.group('time') + " UCT"
-                else:
-                    raise Exception("couldn't parse %s" % (theName,))
-        return value
+            theLongs=self.meta_dict['INVENTORYMETADATA']['SPATIALDOMAINCONTAINER']\
+                      ['HORIZONTALSPATIALDOMAINCONTAINER']['GPOLYGON']['GPOLYGONCONTAINER']\
+                      ['GRINGPOINT']['GRINGPOINTLONGITUDE']['VALUE']
+            theLats=self.meta_dict['INVENTORYMETADATA']['SPATIALDOMAINCONTAINER']['HORIZONTALSPATIALDOMAINCONTAINER']\
+                     ['GPOLYGON']['GPOLYGONCONTAINER']['GRINGPOINT']['GRINGPOINTLATITUDE']['VALUE']
+        lon_list,lat_list = np.array(theLongs),np.array(theLats)
+        min_lat,max_lat=np.min(lat_list),np.max(lat_list)
+        min_lon,max_lon=np.min(lon_list),np.max(lon_list)
+        lon_0 = (max_lon + min_lon)/2.
+        lat_0 = (max_lat + min_lat)/2.
+        corner_dict = dict(lon_list=lon_list,lat_list=lat_list,
+                           min_lat=min_lat,max_lat=max_lat,min_lon=min_lon,
+                           max_lon=max_lon,lon_0=lon_0,lat_0=lat_0)
+        self.value1=corner_dict
+        self.value2=self.meta_dict['INVENTORYMETADATA']['ORBITCALCULATEDSPATIALDOMAIN']['ORBITCALCULATEDSPATIALDOMAINCONTAINER']
+        self.value3=self.meta_dict['INVENTORYMETADATA']['ECSDATAGRANULE']
+        self.value4=self.meta_dict['INVENTORYMETADATA']['RANGEDATETIME']
+        self.value5=self.meta_dict['INVENTORYMETADATA']['COLLECTIONDESCRIPTIONCLASS']
+        self.value6=self.meta_dict['INVENTORYMETADATA']['ASSOCIATEDPLATFORMINSTRUMENTSENSOR']\
+                                         ['ASSOCIATEDPLATFORMINSTRUMENTSENSORCONTAINER']
 
 def parseMeta(filename):
     """
@@ -150,24 +149,22 @@ def parseMeta(filename):
         date file was produced, in UCT
     """
     filename=str(filename)
-   
     the_file = SD(filename, SDC.READ)
     metaDat=the_file.attributes()['CoreMetadata.0']
-
     parseIt=metaParse(metaDat)
     outDict={}
-    outDict['orbit']=parseIt('ORBITNUMBER')
-    outDict['filename']=parseIt('LOCALGRANULEID')
-    outDict['stopdate']=parseIt('RANGEENDINGDATE')
-    outDict['startdate']=parseIt('RANGEBEGINNINGDATE')
-    outDict['starttime']=parseIt('RANGEBEGINNINGTIME')
-    outDict['stoptime']=parseIt('RANGEENDINGTIME')
-    outDict['equatortime']=parseIt('EQUATORCROSSINGTIME')
-    outDict['equatordate']=parseIt('EQUATORCROSSINGDATE')
-    outDict['nasaProductionDate']=parseIt('PRODUCTIONDATETIME')
-    outDict['daynight']=parseIt('DAYNIGHTFLAG')
-    corners=parseIt('CORNERS')
-    outDict.update(corners)
+    outDict['orbit']=parseIt.value2['ORBITNUMBER']['VALUE']
+    outDict['filename']=parseIt.value3['LOCALGRANULEID']['VALUE']
+    outDict['stopdate']=parseIt.value4['RANGEENDINGDATE']['VALUE']
+    outDict['startdate']=parseIt.value4['RANGEBEGINNINGDATE']['VALUE']
+    outDict['starttime']=parseIt.value4['RANGEBEGINNINGTIME']['VALUE']
+    outDict['stoptime']=parseIt.value4['RANGEENDINGTIME']['VALUE']
+    outDict['equatortime']=parseIt.value2['EQUATORCROSSINGTIME']['VALUE']
+    outDict['equatordate']=parseIt.value2['EQUATORCROSSINGDATE']['VALUE']
+    outDict['nasaProductionDate']=parseIt.value3['PRODUCTIONDATETIME']['VALUE']
+    outDict['type'] = parseIt.value5
+    outDict['sensor'] = parseIt.value6
+    outDict.update(parseIt.value1)
     return outDict
 
 def make_parser():

@@ -30,7 +30,6 @@ def main():
     print(f"{stars}\narray shape is: {ch30.shape}\n{stars}")
     rad_file.end()
 
-
     print(f'reading {generic_m3}')
 
 
