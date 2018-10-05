@@ -1,3 +1,28 @@
+"""
+This test tries to confirm that::
+
+    m3_file_2018_10_1.hdf
+
+and:: 
+
+    rad_file_2018_10_1.hdf
+
+are in your a301.data_dir folder and that::
+
+    pyresample.SwathDefinition.compute_optimal_bb_area
+
+can compute an area_def and kdresample can resample
+your lats and lons.
+
+Usage::
+
+    python -m a301.scripts.week5_test
+
+which should print out shapes and diagnostics, or an error message
+if you have the wrong files
+
+"""
+
 from pyhdf.SD import SD, SDC
 from a301.scripts.modismeta_read import parseMeta
 from a301.geometry import get_proj_params
@@ -6,7 +31,9 @@ import a301
 from pathlib import Path
 
 def main():
-
+    """
+    run the test
+    """
     generic_m3= a301.data_dir / Path("m3_file_2018_10_1.hdf")
     if not generic_m3.exists():
         raise ValueError(f"couldn't find {generic_m3}")
@@ -33,7 +60,7 @@ def main():
     print(f'reading {generic_m3}')
 
 
-    from pyresample import load_area, save_quicklook, SwathDefinition
+    from pyresample import SwathDefinition
     proj_params = get_proj_params(generic_m3)
     swath_def = SwathDefinition(lons, lats)
     area_def=swath_def.compute_optimal_bb_area(proj_dict=proj_params)
