@@ -1,0 +1,136 @@
+
+**************************************************
+Reading /Users/phil/repos/a301_code/data/myd05_l2_10_7.hdf
+
+nnumber of datasets, number of attributes
+=(13, 10)
+**************************************************
+
+
+**************************************************
+Here are the datasets
+**************************************************
+
+**************************************************
+
+0 Latitude [408, 270]
+dict_keys(['valid_range', '_FillValue', 'long_name', 'units', 'scale_factor', 'add_offset', 'Parameter_Type', 'Cell_Along_Swath_Sampling', 'Cell_Across_Swath_Sampling', 'Geolocation_Pointer'])
+**************************************************
+
+
+**************************************************
+
+1 Longitude [408, 270]
+dict_keys(['valid_range', '_FillValue', 'long_name', 'units', 'scale_factor', 'add_offset', 'Parameter_Type', 'Cell_Along_Swath_Sampling', 'Cell_Across_Swath_Sampling', 'Geolocation_Pointer'])
+**************************************************
+
+
+**************************************************
+
+2 Scan_Start_Time [408, 270]
+dict_keys(['valid_range', '_FillValue', 'long_name', 'units', 'scale_factor', 'add_offset', 'Parameter_Type', 'Cell_Along_Swath_Sampling', 'Cell_Across_Swath_Sampling', 'Geolocation_Pointer'])
+**************************************************
+
+
+**************************************************
+
+3 Solar_Zenith [408, 270]
+dict_keys(['valid_range', '_FillValue', 'long_name', 'units', 'scale_factor', 'add_offset', 'Parameter_Type', 'Cell_Along_Swath_Sampling', 'Cell_Across_Swath_Sampling', 'Geolocation_Pointer'])
+**************************************************
+
+
+**************************************************
+
+4 Solar_Azimuth [408, 270]
+dict_keys(['valid_range', '_FillValue', 'long_name', 'units', 'scale_factor', 'add_offset', 'Parameter_Type', 'Cell_Along_Swath_Sampling', 'Cell_Across_Swath_Sampling', 'Geolocation_Pointer'])
+**************************************************
+
+
+**************************************************
+
+5 Sensor_Zenith [408, 270]
+dict_keys(['valid_range', '_FillValue', 'long_name', 'units', 'scale_factor', 'add_offset', 'Parameter_Type', 'Cell_Along_Swath_Sampling', 'Cell_Across_Swath_Sampling', 'Geolocation_Pointer'])
+**************************************************
+
+
+**************************************************
+
+6 Sensor_Azimuth [408, 270]
+dict_keys(['valid_range', '_FillValue', 'long_name', 'units', 'scale_factor', 'add_offset', 'Parameter_Type', 'Cell_Along_Swath_Sampling', 'Cell_Across_Swath_Sampling', 'Geolocation_Pointer'])
+**************************************************
+
+
+**************************************************
+
+7 Cloud_Mask_QA [2040, 1354]
+dict_keys(['long_name', 'unit', 'scale_factor', 'add_offset', 'Parameter_Type', 'Cell_Along_Swath_Sampling', 'Cell_Across_Swath_Sampling', 'Geolocation_Pointer', 'description', 'valid_range', '_FillValue'])
+**************************************************
+
+
+**************************************************
+
+8 Water_Vapor_Near_Infrared [2040, 1354]
+dict_keys(['long_name', 'unit', 'scale_factor', 'add_offset', 'Parameter_Type', 'Cell_Along_Swath_Sampling', 'Cell_Across_Swath_Sampling', 'Geolocation_Pointer', 'valid_range', '_FillValue'])
+**************************************************
+
+
+**************************************************
+
+9 Water_Vapor_Correction_Factors [2040, 1354]
+dict_keys(['long_name', 'unit', 'scale_factor', 'add_offset', 'Parameter_Type', 'Cell_Along_Swath_Sampling', 'Cell_Across_Swath_Sampling', 'Geolocation_Pointer', 'valid_range', '_FillValue'])
+**************************************************
+
+
+**************************************************
+
+10 Water_Vapor_Infrared [408, 270]
+dict_keys(['valid_range', '_FillValue', 'long_name', 'units', 'scale_factor', 'add_offset', 'Parameter_Type', 'Cell_Along_Swath_Sampling', 'Cell_Across_Swath_Sampling', 'Geolocation_Pointer'])
+**************************************************
+
+
+**************************************************
+
+11 Quality_Assurance_Near_Infrared [2040, 1354, 1]
+dict_keys(['long_name', 'unit', 'scale_factor', 'add_offset', 'Parameter_Type', 'Cell_Along_Swath_Sampling', 'Cell_Across_Swath_Sampling', 'Geolocation_Pointer', 'description', 'valid_range', '_FillValue'])
+**************************************************
+
+
+**************************************************
+
+12 Quality_Assurance_Infrared [408, 270, 5]
+dict_keys(['valid_range', '_FillValue', 'long_name', 'units', 'scale_factor', 'add_offset', 'Parameter_Type', 'Cell_Along_Swath_Sampling', 'Cell_Across_Swath_Sampling', 'Geolocation_Pointer', 'description'])
+**************************************************
+
+
+
+**************************************************
+Here are the truncated global attributes
+**************************************************
+
+Key: HDFEOSVersion --- Value: HDFEOS_V2.19
+Key: StructMetadata.0 --- Value: GROUP=SwathStructure
+	GROUP=SWATH_1
+		SwathName="mod05"
+		GROUP=Dimension
+			OBJECT=Dimension_1
+				
+Key: Maximum_Number_of_1km_Frames --- Value: 1354
+Key: Number_of_Instrument_Scans --- Value: 204
+Key: title --- Value: 
+ MODIS HDF File Specification MOD05_L2: MODIS Level 2 NIR and IR Total Precipitable Water 
+
+Key: Slope_and_Offset_Usage --- Value: 
+The local SDS scale_factor and add_offset attributes are used for the      
+conversion of stored in
+Key: CoreMetadata.0 --- Value: 
+GROUP                  = INVENTORYMETADATA
+  GROUPTYPE            = MASTERGROUP
+
+  GROUP           
+Key: ArchiveMetadata.0 --- Value: 
+GROUP                  = ARCHIVEDMETADATA
+  GROUPTYPE            = MASTERGROUP
+
+  OBJECT           
+Key: identifier_product_doi --- Value: 10.5067/MODIS/MYD05_L2.061
+Key: identifier_product_doi_authority --- Value: http://dx.doi.org

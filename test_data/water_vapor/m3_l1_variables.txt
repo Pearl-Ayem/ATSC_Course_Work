@@ -1,0 +1,379 @@
+
+**************************************************
+Reading /Users/phil/repos/a301_code/data/m3_file_2018_10_1.hdf
+
+nnumber of datasets, number of attributes
+=(46, 27)
+**************************************************
+
+
+**************************************************
+Here are the datasets
+**************************************************
+
+**************************************************
+
+0 Latitude [2040, 1354]
+dict_keys(['units', 'valid_range', '_FillValue'])
+**************************************************
+
+
+**************************************************
+
+1 Longitude [2040, 1354]
+dict_keys(['units', 'valid_range', '_FillValue'])
+**************************************************
+
+
+**************************************************
+
+2 Scan Offset [4080, 2708]
+dict_keys(['units', 'valid_range', '_FillValue', 'scale_factor'])
+**************************************************
+
+
+**************************************************
+
+3 Track Offset [4080, 2708]
+dict_keys(['units', 'valid_range', '_FillValue', 'scale_factor'])
+**************************************************
+
+
+**************************************************
+
+4 Height Offset [4080, 2708]
+dict_keys(['units', 'valid_range', '_FillValue', 'scale_factor'])
+**************************************************
+
+
+**************************************************
+
+5 Height [2040, 1354]
+dict_keys(['units', 'valid_range', '_FillValue'])
+**************************************************
+
+
+**************************************************
+
+6 SensorZenith [2040, 1354]
+dict_keys(['units', 'valid_range', '_FillValue', 'scale_factor'])
+**************************************************
+
+
+**************************************************
+
+7 SensorAzimuth [2040, 1354]
+dict_keys(['units', 'valid_range', '_FillValue', 'scale_factor'])
+**************************************************
+
+
+**************************************************
+
+8 Range [2040, 1354]
+dict_keys(['units', 'valid_range', '_FillValue', 'scale_factor'])
+**************************************************
+
+
+**************************************************
+
+9 SolarZenith [2040, 1354]
+dict_keys(['units', 'valid_range', '_FillValue', 'scale_factor'])
+**************************************************
+
+
+**************************************************
+
+10 SolarAzimuth [2040, 1354]
+dict_keys(['units', 'valid_range', '_FillValue', 'scale_factor'])
+**************************************************
+
+
+**************************************************
+
+11 Land/SeaMask [2040, 1354]
+dict_keys(['valid_range', '_FillValue'])
+**************************************************
+
+
+**************************************************
+
+12 WaterPresent [2040, 1354]
+dict_keys(['valid_range', '_FillValue'])
+**************************************************
+
+
+**************************************************
+
+13 gflags [2040, 1354]
+dict_keys(['_FillValue'])
+**************************************************
+
+
+**************************************************
+
+14 Scan number [204]
+dict_keys(['_FillValue'])
+**************************************************
+
+
+**************************************************
+
+15 EV frames [204]
+dict_keys(['valid_range'])
+**************************************************
+
+
+**************************************************
+
+16 SD frames [204]
+dict_keys([])
+**************************************************
+
+
+**************************************************
+
+17 SV frames [204]
+dict_keys([])
+**************************************************
+
+
+**************************************************
+
+18 EV start time [204]
+dict_keys(['units', '_FillValue'])
+**************************************************
+
+
+**************************************************
+
+19 SD start time [204]
+dict_keys(['units', '_FillValue'])
+**************************************************
+
+
+**************************************************
+
+20 SV start time [204]
+dict_keys(['units', '_FillValue'])
+**************************************************
+
+
+**************************************************
+
+21 EV center time [204]
+dict_keys(['units', '_FillValue'])
+**************************************************
+
+
+**************************************************
+
+22 Mirror side [204]
+dict_keys(['valid_range', '_FillValue'])
+**************************************************
+
+
+**************************************************
+
+23 SD Sun zenith [204]
+dict_keys(['units', '_FillValue'])
+**************************************************
+
+
+**************************************************
+
+24 SD Sun azimuth [204]
+dict_keys(['units', '_FillValue'])
+**************************************************
+
+
+**************************************************
+
+25 Moon Vector [204, 3]
+dict_keys(['_FillValue'])
+**************************************************
+
+
+**************************************************
+
+26 L1 scan quality [204, 4]
+dict_keys(['_FillValue'])
+**************************************************
+
+
+**************************************************
+
+27 Geo scan quality [204, 4]
+dict_keys(['_FillValue'])
+**************************************************
+
+
+**************************************************
+
+28 orb_pos [204, 3]
+dict_keys(['units', 'valid_range', '_FillValue'])
+**************************************************
+
+
+**************************************************
+
+29 orb_vel [204, 3]
+dict_keys(['units', 'valid_range', '_FillValue'])
+**************************************************
+
+
+**************************************************
+
+30 T_inst2ECR [204, 3]
+dict_keys(['valid_range', '_FillValue'])
+**************************************************
+
+
+**************************************************
+
+31 attitude_angles [204, 3]
+dict_keys(['units', '_FillValue', 'roll_element', 'pitch_element', 'yaw_element'])
+**************************************************
+
+
+**************************************************
+
+32 sun_ref [204, 3]
+dict_keys(['valid_range', '_FillValue'])
+**************************************************
+
+
+**************************************************
+
+33 num_impulse [204]
+dict_keys(['valid_range'])
+**************************************************
+
+
+**************************************************
+
+34 impulse_enc [204, 25]
+dict_keys(['units', 'valid_range', '_FillValue'])
+**************************************************
+
+
+**************************************************
+
+35 impulse_time [204, 25]
+dict_keys(['units', 'valid_range', '_FillValue'])
+**************************************************
+
+
+**************************************************
+
+36 Scan Type [204, 10]
+dict_keys([])
+**************************************************
+
+
+**************************************************
+
+37 thermal_correction [204, 3]
+dict_keys(['units', 'valid_range', '_FillValue', 'roll_element', 'pitch_element', 'yaw_element'])
+**************************************************
+
+
+**************************************************
+
+38 attitude_quality [204, 1354]
+dict_keys(['valid_range', '_FillValue', 'overall', 'data_summary', 'red_limit_low', 'yellow_limit_low', 'yellow_limit_high', 'red_limit_high', 'long_gap_follows', 'short_gap_follows', 'short_gap_precedes', 'long_gap_precedes', 'repaired_data_point', 'quality_flag_problem', 'interpolated_point'])
+**************************************************
+
+
+**************************************************
+
+39 ephemeris_quality [204, 1354]
+dict_keys(['valid_range', '_FillValue', 'overall', 'data_summary', 'red_limit_low', 'yellow_limit_low', 'yellow_limit_high', 'red_limit_high', 'long_gap_follows', 'short_gap_follows', 'short_gap_precedes', 'long_gap_precedes', 'repaired_data_point', 'quality_flag_problem', 'interpolated_point'])
+**************************************************
+
+
+**************************************************
+
+40 Focal_length [37]
+dict_keys(['units'])
+**************************************************
+
+
+**************************************************
+
+41 band_position [37]
+dict_keys(['units'])
+**************************************************
+
+
+**************************************************
+
+42 detector_space [37]
+dict_keys(['units'])
+**************************************************
+
+
+**************************************************
+
+43 detector_offsets [37, 2]
+dict_keys(['units', 'scandim', 'trackdim'])
+**************************************************
+
+
+**************************************************
+
+44 T_offset [37]
+dict_keys(['units'])
+**************************************************
+
+
+**************************************************
+
+45 num_samples [37]
+dict_keys([])
+**************************************************
+
+
+
+**************************************************
+Here are the truncated global attributes
+**************************************************
+
+Key: HDFEOSVersion --- Value: HDFEOS_V2.16
+Key: StructMetadata.0 --- Value: GROUP=SwathStructure
+	GROUP=SWATH_1
+		SwathName="MODIS_Swath_Type_GEO"
+		GROUP=Dimension
+			OBJECT=D
+Key: band_number --- Value: 0
+Key: Ephemeris Input Files.1 --- Value: GRANULE: ftp://tads1u.ecs.nasa.gov/data/s4pa/.entRUsfomwqHapKT/aqua_dprep/PM1EPHD/2013/222/PM_DEFORB
+Key: Attitude Input Files.1 --- Value: GRANULE: ftp://tads1u.ecs.nasa.gov/data/s4pa/.entRUsfomwqHapKT/aqua_dprep/PMCOGBAD.2/2013/222/DAAC_D
+Key: identifier_product_doi --- Value: 10.5067/MODIS/MYD03.006
+Key: identifier_product_doi_authority --- Value: http://dx.doi.org
+Key: CoreMetadata.0 --- Value: 
+GROUP                  = INVENTORYMETADATA
+  GROUPTYPE            = MASTERGROUP
+
+  GROUP           
+Key: ArchiveMetadata.0 --- Value: 
+GROUP                  = ARCHIVEDMETADATA
+  GROUPTYPE            = MASTERGROUP
+
+  OBJECT           
+Key: Number of Scans --- Value: 204
+Key: Max Earth Frames --- Value: 1354
+Key: Max SD Frames --- Value: 50
+Key: Max SV Frames --- Value: 50
+Key: Incomplete Scans --- Value: 0
+Key: Missing Packets --- Value: 0
+Key: Packets with bad CRC --- Value: 0
+Key: Discarded Packets --- Value: 0
+Key: Ephemeris/Attitude Source --- Value: SDP Toolkit
+Key: Terrain Correction Flag --- Value: TRUE
+Key: Parameter Version --- Value: 6.10
+Key: GEO_EST_RMS_ERROR --- Value: 75.0
+Key: Cumulated gflags --- Value: [0, 0, 0, 0, 0, 0, 0, 0]
+Key: utcpole File Header --- Value: File Updated: 2013-08-09T01:59:40Z, using USNO ser7 finals.data file of Aug  08
+Key: Polar Motion --- Value: [0.17456314598934516, 0.35071034253471434, 0.04879778371347738]
+Key: HDFEOS_FractionalOffset_nscans*20_MODIS_Swath_Type_GEO --- Value: 0.5
+Key: HDFEOS_FractionalOffset_mframes*2_MODIS_Swath_Type_GEO --- Value: 0.0
+Key: NOT EMPTY19622 --- Value: NOT EMPTY

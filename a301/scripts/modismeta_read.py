@@ -79,9 +79,10 @@ class metaParse:
             right_lon=rectangle['EASTBOUNDINGCOORDINATE']['VALUE']
             top_lat=rectangle['NORTHBOUNDINGCOORDINATE']['VALUE']
             bot_lat=rectangle['SOUTHBOUNDINGCOORDINATE']['VALUE']
-            theLongs=[bot_lat,bot_lat,top_lat,top_lat]  #ccw from lower right
-            theLats=[right_lon,left_lon,left_lon,right_lon]
+            theLongs=[right_lon,left_lon,left_lon,right_lon]
+            theLats=[bot_lat,bot_lat,top_lat,top_lat]  #ccw from lower right
         else:
+            #pdb.set_trace()
             theLongs=self.meta_dict['INVENTORYMETADATA']['SPATIALDOMAINCONTAINER']\
                       ['HORIZONTALSPATIALDOMAINCONTAINER']['GPOLYGON']['GPOLYGONCONTAINER']\
                       ['GRINGPOINT']['GRINGPOINTLONGITUDE']['VALUE']
@@ -92,6 +93,7 @@ class metaParse:
         min_lon,max_lon=np.min(lon_list),np.max(lon_list)
         lon_0 = (max_lon + min_lon)/2.
         lat_0 = (max_lat + min_lat)/2.
+        lon_list, lat_list=list(lon_list),list(lat_list)
         corner_dict = dict(lon_list=lon_list,lat_list=lat_list,
                            min_lat=min_lat,max_lat=max_lat,min_lon=min_lon,
                            max_lon=max_lon,lon_0=lon_0,lat_0=lat_0)
@@ -186,6 +188,7 @@ def main(args=None):
     parsed_args = parser.parse_args(args)
     filename = str(Path(parsed_args.level1b_file).resolve())
     out=parseMeta(filename)
+    print(f'header for {filename}')
     pprint.pprint(out)
 
 if __name__=='__main__':

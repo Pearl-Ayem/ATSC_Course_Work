@@ -30,6 +30,7 @@ if not notebooks_dir.is_dir():
 root_dir = path.parent.parent
 data_dir = root_dir / Path('data')
 test_dir = root_dir / Path('test_data')
+map_dir = root_dir / Path('map_data')
 if not data_dir.is_dir():
     raise ValueError("You need to create the folder {data_dir}")
 
