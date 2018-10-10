@@ -35,6 +35,8 @@ def main():
     """
     run the test
     """
+    stars='*'*50
+    print(f'\n{stars}\nrunning test: {__file__}\n{stars}\n')
     generic_m3= a301.data_dir / Path("m3_file_2018_10_1.hdf")
     if not generic_m3.exists():
         raise ValueError(f"couldn't find {generic_m3}")
