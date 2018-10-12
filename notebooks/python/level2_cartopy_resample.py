@@ -154,6 +154,7 @@ the_file.end()
 the_file = SD(str(m5_file), SDC.READ)
 lats_5km = the_file.select('Latitude').get()
 lons_5km = the_file.select('Longitude').get()
+the_file.end()
 
 
 # ## Get the IR vapor plus 5 of its attributes
@@ -165,6 +166,7 @@ lons_5km = the_file.select('Longitude').get()
 # In[4]:
 
 
+the_file = SD(str(m5_file), SDC.READ)
 wv_ir = the_file.select('Water_Vapor_Infrared')
 attributes=['units', 'scale_factor', 'add_offset', 'valid_range', '_FillValue']
 attr_dict=wv_ir.attributes()
@@ -218,6 +220,7 @@ ax.set_title('5 km wv data (cm)');
 # In[8]:
 
 
+the_file = SD(str(m5_file), SDC.READ)
 wv_nearir = the_file.select('Water_Vapor_Near_Infrared')
 attrib_list=['unit', 'scale_factor', 'add_offset', 'valid_range', '_FillValue']
 attr_dict=wv_nearir.attributes()
