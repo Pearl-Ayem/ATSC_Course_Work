@@ -156,6 +156,7 @@ def parseMeta(filename):
     parseIt=metaParse(metaDat)
     outDict={}
     outDict['orbit']=parseIt.value2['ORBITNUMBER']['VALUE']
+    outDict['daynight']=parseIt.value3['DAYNIGHTFLAG']['VALUE']
     outDict['filename']=parseIt.value3['LOCALGRANULEID']['VALUE']
     outDict['stopdate']=parseIt.value4['RANGEENDINGDATE']['VALUE']
     outDict['startdate']=parseIt.value4['RANGEBEGINNINGDATE']['VALUE']
