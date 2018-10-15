@@ -447,3 +447,21 @@ metadata_dict['description']='modis ir water vapor (cm) sampled at 5 km resoluti
 metadata_dict['history']='written by level2_cartopy_resample.ipynb'
 dump_image(image_wv_ir,metadata_dict,map_dir,image_name)
 
+
+# In[19]:
+
+
+area_def_lr
+
+
+# In[20]:
+
+
+area_def_hr
+
+
+# In[21]:
+
+
+area_def_lr
+

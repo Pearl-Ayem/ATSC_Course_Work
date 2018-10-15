@@ -30,9 +30,20 @@ import argparse
 import requests
 from pathlib import Path
 import shutil
+import a301
+import pandas as pd
 
 class NoDataException(Exception):
     pass
+
+def read_soundings():
+    soundings_folder= a301.test_dir / Path('soundings')
+    sounding_files = list(soundings_folder.glob("*csv"))
+    sound_dict={}
+    for item in sounding_files:
+        sound_dict[item.stem]=pd.read_csv(item)
+    return sound_dict
+
 
 def download(filename,root='https://clouds.eos.ubc.ca/~phil/courses/atsc301/downloads'):
     """
