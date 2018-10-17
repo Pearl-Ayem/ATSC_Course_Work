@@ -349,7 +349,7 @@ import json
 
 def area_def_to_dict(area_def):
     """
-    given an area_def, save it as a dictionary
+    given an area_def, save it as a dictionary`
     
     Parameters
     ----------
