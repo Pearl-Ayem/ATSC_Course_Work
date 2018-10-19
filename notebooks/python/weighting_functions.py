@@ -368,7 +368,7 @@ fig1.savefig('trans_plots.png');
 # 
 # For plotting the radiances are turned into brightness temperatures at line 17
 
-# In[11]:
+# In[ ]:
 
 
 from collections import defaultdict
@@ -376,6 +376,7 @@ from a301.radiation import calc_radiance,planck_invert
 Tbright=defaultdict(list)
 for the_sound,the_df in sound_dict.items():
     for the_wave_m,the_k in zip(wavelengths,k_lambda_list):
+        pdb.set_trace()
         tau = find_tau(r_gas,the_k,the_df)
         tau_tot=tau[-1]
         temps=the_df['temp'].values
