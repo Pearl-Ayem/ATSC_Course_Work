@@ -12,7 +12,7 @@
 # surface temperature.  I borrowed code from the weighting_functions notebook, my
 # answer is 9 lines of code including the return statement
 
-# In[3]:
+# In[8]:
 
 
 from a301.radiation import calc_radiance
@@ -75,13 +75,14 @@ def multi_layer_radiance(Tsfc,Temps,tau,the_wavel):
     
     """
     ### BEGIN SOLUTION
-    Batm = [calc_radiance(the_wavel,the_temp) for the_temp in Temps]
+    Batm = np.array([calc_radiance(the_wavel,the_temp) for the_temp in Temps])
     Bsfc = calc_radiance(the_wavel,Tsfc)
     tau_tot = tau[-1]
     trans = np.exp(-(tau_tot - tau))
     weights=np.diff(trans)
     sfc_flux=Bsfc*np.exp(-tau_tot)
     atm_flux = np.sum(Batm*weights)
+    print(f'{type(Batm)}, {type(weights)}')
     the_flux=sfc_flux + atm_flux
     return the_flux
     ### END SOLUTION
@@ -91,7 +92,7 @@ def multi_layer_radiance(Tsfc,Temps,tau,the_wavel):
 # 
 # Here is a test set of layers that should produce a radiance of 9.045 W/m^2/micron/sr
 
-# In[6]:
+# In[9]:
 
 
 from numpy.testing import assert_almost_equal
@@ -103,7 +104,7 @@ out=multi_layer_radiance(Tsfc,Temps,taus,the_wavel)
 assert_almost_equal(out*1.e-6,9.045,decimal=3)
 
 
-# In[9]:
+# In[3]:
 
 
 ### BEGIN HIDDEN TESTS
