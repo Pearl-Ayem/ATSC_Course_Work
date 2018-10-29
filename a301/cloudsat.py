@@ -174,7 +174,7 @@ def HDFread(filename, variable, Class=None):
 
 
 
-def get_geo(hdfname, monotonic_lons=True,root_name=None):
+def get_geo(hdfname, monotonic_lons=True)
     """
     given the name of any hdf file from the Cloudsat data archive
     return lat,lon,time_vals,prof_times,dem_elevation
@@ -189,8 +189,6 @@ def get_geo(hdfname, monotonic_lons=True,root_name=None):
           string with name of hdf file from http://www.cloudsat.cira.colostate.edu/dataSpecs.php
     monotonic_id: bool
            wrap the longitude by addint 360 degrees if it flips form 180 to -180 
-    root_name: str
-           optional name for root field name (like 2B-FLXHR_LIDAR) otherwise first key
 
     Returns
     -------
