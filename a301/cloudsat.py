@@ -174,7 +174,7 @@ def HDFread(filename, variable, Class=None):
 
 
 
-def get_geo(hdfname, monotonic_lons=True)
+def get_geo(hdfname, monotonic_lons=True):
     """
     given the name of any hdf file from the Cloudsat data archive
     return lat,lon,time_vals,prof_times,dem_elevation
@@ -265,14 +265,15 @@ def get_geo(hdfname, monotonic_lons=True)
 if __name__ == "__main__":
 
     import a301
-    filename= a301.test_data /
+    filename= a301.test_data / \
             Path('2006303212128_02702_CS_2B-GEOPROF_GRANULE_P_R04_E02.hdf')
     lat,lon,date_times,prof_times,dem_elevation=get_geo(filename)
     minlat,maxlat = np.min(lat),np.max(lat)
     minlon,maxlon = np.min(lon),np.max(lon)
     maxheight = np.max(dem_elevation)
-    print('\nlatitudes -- deg north: \nmin: {},  max: {}\n'.format(minlat,maxlat))
-    print('\nlongitudes -- deg east: \nmin: {},max: {}\n'.format(minlon,maxlon))
-    print('\nmax elev (m): {}\n'.format(maxheight))
-    print('\norbit start/stop dates (UCT): \nstart: {}\nstop: {}\n'.format(date_times[0],date_times[-1]))
+    print(f'\nlatitudes -- deg north: \nmin: {minlat},  max: {maxlat}\n')
+    print(f'\nlongitudes -- deg east: \nmin: {minlon},max: {maxlon}\n')
+    print(f'\nmax elev (m): {maxheight}\n')
+    print(f'\norbit start/stop dates (UCT): \nstart: {date_times[0]}\nstop: {date_times[-1]}\n')
+    
           

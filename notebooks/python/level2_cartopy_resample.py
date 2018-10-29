@@ -134,6 +134,7 @@ from pathlib import Path
 from pyhdf.SD import SD, SDC
 import pprint
 import json
+import pdb
 
 
 # # Read in the 1km and 5km water vapor files
@@ -259,32 +260,35 @@ ax.set_title('1 km water vapor (cm)');
 # the low resolution (lr) image 
 # 
 
-# In[11]:
+# In[ ]:
 
 
 # %load temp.md
-from pyresample import  SwathDefinition, kd_tree, geometry
-proj_params = get_proj_params(m5_file)
-swath_def = SwathDefinition(lons_5km, lats_5km)
-area_def_lr=swath_def.compute_optimal_bb_area(proj_dict=proj_params)
-area_def_lr.name="ir wv retrieval modis 5 km resolution (lr=low resolution)"
-area_def_lr.area_id='modis_ir_wv'
-area_def_lr.job_id = area_def_lr.area_id
-fill_value=-9999.
-image_wv_ir = kd_tree.resample_nearest(swath_def, wv_ir_scaled.ravel(),
-                                  area_def_lr, radius_of_influence=5000, 
-                                      nprocs=2,fill_value=fill_value)
-image_wv_ir[image_wv_ir < -9000]=np.nan
-print(f'\ndump area definition:\n{area_def_lr}\n')
-print((f'\nx and y pixel dimensions in meters:'
-       f'\n{area_def_lr.pixel_size_x}\n{area_def_lr.pixel_size_y}\n'))
+def runit():
+    from pyresample import  SwathDefinition, kd_tree, geometry
+    proj_params = get_proj_params(m5_file)
+    swath_def = SwathDefinition(lons_5km, lats_5km)
+    area_def_lr=swath_def.compute_optimal_bb_area(proj_dict=proj_params)
+    area_def_lr.name="ir wv retrieval modis 5 km resolution (lr=low resolution)"
+    area_def_lr.area_id='modis_ir_wv'
+    area_def_lr.job_id = area_def_lr.area_id
+    fill_value=-9999.
+    image_wv_ir = kd_tree.resample_nearest(swath_def, wv_ir_scaled.ravel(),
+                                      area_def_lr, radius_of_influence=5000, 
+                                          nprocs=2,fill_value=fill_value)
+    image_wv_ir[image_wv_ir < -9000]=np.nan
+    print(f'\ndump area definition:\n{area_def_lr}\n')
+    print((f'\nx and y pixel dimensions in meters:'
+           f'\n{area_def_lr.pixel_size_x}\n{area_def_lr.pixel_size_y}\n'))
+    pdb.set_trace()
+runit()
 
 
 # ### Resample the 1km near-ir water vapor on the same grid
 # 
 # Reuse area_def_lr for the high resolution nearir image so we can compare directly with low resolution ir
 
-# In[12]:
+# In[ ]:
 
 
 swath_def = SwathDefinition(lons_1km, lats_1km)
@@ -295,7 +299,7 @@ image_wv_nearir_lr = kd_tree.resample_nearest(swath_def, wv_nearir_scaled.ravel(
 image_wv_nearir_lr[image_wv_nearir_lr < -9000]=np.nan
 
 
-# In[13]:
+# In[ ]:
 
 
 plt.hist(image_wv_nearir_lr[~np.isnan(image_wv_nearir_lr)])
@@ -308,7 +312,7 @@ ax.set_title('1 km water vapor (cm), low resolution nearir scaled to 5km (lr)');
 # resample the neair wv onto that grid to show full resolution image.  Call this
 # area_def area_def_hr
 
-# In[14]:
+# In[ ]:
 
 
 ### Resample the 1 km near-ir water vapor onto a 1 km grid
@@ -342,7 +346,7 @@ image_wv_nearir_hr[image_wv_nearir_hr < -9000]=np.nan
 # but you don't have to hard-code in 'my_attribute'
 # 
 
-# In[15]:
+# In[ ]:
 
 
 import json
@@ -371,7 +375,7 @@ def area_def_to_dict(area_def):
 
 # ## Create a directory to hold the images and area_def dictionaries
 
-# In[16]:
+# In[ ]:
 
 
 map_dir = a301.map_dir / Path('map_data/wv_maps')
@@ -382,7 +386,7 @@ map_dir.mkdir(parents=True, exist_ok=True)
 # 
 # We'll need to use area_def_to_dict when we create the metadata_dict
 
-# In[17]:
+# In[ ]:
 
 
 import pdb
@@ -418,7 +422,7 @@ def dump_image(image_array,metadata_dict,foldername,
 
 # ## Write out images, putting useful metadeta in metadata_dict
 
-# In[18]:
+# In[ ]:
 
 
 image_name='wv_nearir_lr'
@@ -448,19 +452,19 @@ metadata_dict['history']='written by level2_cartopy_resample.ipynb'
 dump_image(image_wv_ir,metadata_dict,map_dir,image_name)
 
 
-# In[19]:
+# In[ ]:
 
 
 area_def_lr
 
 
-# In[20]:
+# In[ ]:
 
 
 area_def_hr
 
 
-# In[21]:
+# In[ ]:
 
 
 area_def_lr
