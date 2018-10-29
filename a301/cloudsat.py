@@ -4,7 +4,6 @@ file's contents and retrieve the geographical time, distance data
 fields
 """
 
-import h5py
 import datetime
 import numpy as np
 from pathlib import Path
