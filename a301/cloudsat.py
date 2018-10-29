@@ -1,10 +1,9 @@
 """
- these functions read a standard Cloudsat data file and return
- geolocation and time data for the orbit
-
- 
-
+Cloudsat utily code to describe a cloudsat
+file's contents and retrieve the geographical time, distance data
+fields
 """
+
 import h5py
 import datetime
 import numpy as np
@@ -19,6 +18,25 @@ import sys
 
 #https://stackoverflow.com/questions/31003968/fields-not-found-when-using-pyhdf
 def describevg(refnum,v,vs,sd):
+    """
+    read a vgroup with a given refnum
+
+    Parameters
+    ----------
+
+    refnum: int
+      hdf4 reference number for element
+
+    v: hdf.vgstart object marks the beginning of the vgroup
+
+    vs: hdf.vstart object marks the beginning of the vdata
+
+    Returns
+    -------
+
+    prints information about the vgroup
+
+    """
     # Describe the vgroup with the given refnum.
     # Open vgroup in read mode.
     vg = v.attach(refnum)
@@ -71,7 +89,23 @@ def describevg(refnum,v,vs,sd):
     # Close vgroup
     vg.detach()
 
-def dump_cloudsat(filename):    
+def dump_cloudsat(filename):
+    """
+    walk the hdf file and print out
+    information about each vgroup and vdata
+    object
+
+    Parameters
+    ----------
+
+    filename: str or Path object
+        name of hdf file
+
+    Returns
+    -------
+
+    prints information to stdout
+    """
     #
     
     filename=str(filename)
@@ -181,6 +215,12 @@ def get_geo(hdfname, monotonic_lons=True,root_name=None):
     var_dict={}
     for var_name in variable_names:
         var_dict[var_name]=HDFread(hdfname,var_name)
+    #
+    # tai stands for "international atomic time
+    # https://en.wikipedia.org/wiki/International_Atomic_Time
+    # https://space.stackexchange.com/questions/22240/is-gps-time-at-least-really-close-to-tai-international-atomic-time
+    # 
+    #
     tai_start=HDFread(hdfname,'TAI_start')[0][0]
     #
     # the longitude can flip between +180 and -180 at the international dateline
@@ -225,10 +265,10 @@ def get_geo(hdfname, monotonic_lons=True,root_name=None):
     return out_list
 
 if __name__ == "__main__":
-    
-    from a301utils.a301_readfile import download
-    filename='2006303212128_02702_CS_2B-GEOPROF_GRANULE_P_R04_E02.h5'
-    download(filename)
+
+    import a301
+    filename= a301.test_data /
+            Path('2006303212128_02702_CS_2B-GEOPROF_GRANULE_P_R04_E02.hdf')
     lat,lon,date_times,prof_times,dem_elevation=get_geo(filename)
     minlat,maxlat = np.min(lat),np.max(lat)
     minlon,maxlon = np.min(lon),np.max(lon)
