@@ -7,11 +7,12 @@ fields
 import datetime
 import numpy as np
 from pathlib import Path
-from pyhdf.HDF import HDF, HC
+from pyhdf.HDF import HDF, HC, HDF4Error
 from pyhdf.V   import V
 from pyhdf.VS  import VS
 from pyhdf.SD  import SD, SDC
 import pdb
+import pprint
 
 import sys
 
@@ -36,6 +37,7 @@ def describevg(refnum,v,vs,sd):
     prints information about the vgroup
 
     """
+    print(f'Scientific Datasets: \n{pprint.pformat(sd.datasets())}\n')
     # Describe the vgroup with the given refnum.
     # Open vgroup in read mode.
     vg = v.attach(refnum)
@@ -111,7 +113,7 @@ def dump_cloudsat(filename):
     hdf = HDF(filename)
 
     # Initialize the SD, V and VS interfaces on the file.
-    sd = SD(file_name)
+    sd = SD(filename)
     vs = hdf.vstart()
     v  = hdf.vgstart()
 
@@ -125,6 +127,10 @@ def dump_cloudsat(filename):
             break
         describevg(ref,v,vs,sd)
     return None
+
+def HDFvd_read(filename, variable, Class=None):
+    out=HDFread(filename, variable, Class = Class)
+    return out
 
 def HDFread(filename, variable, Class=None):
     """
@@ -171,6 +177,22 @@ def HDFread(filename, variable, Class=None):
     hdf.close()
     return np.asarray(V)
 
+def HDFsd_read(filename,sdname):
+    the_file = SD(str(filename), SDC.READ)
+    try:
+        out=the_file.select(sdname)
+        values=out.get()
+        attributes=out.attributes()
+    except HDF4Error as e:
+        datasets_dict = the_file.datasets()
+        print(f"couldn't find {sdname} in "
+              f"\n{pprint.pformat(datasets_dict)}")
+        values=None
+        attributes=None
+        print(e)
+    the_file.end()
+        
+    return values, attributes
 
 
 def get_geo(hdfname, monotonic_lons=True):

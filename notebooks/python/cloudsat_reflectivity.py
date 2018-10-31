@@ -147,6 +147,15 @@ for index,the_lon in enumerate(lons_segment[1:]):
 distance=np.array(distance)/meters2km
 
 
+# In[7]:
+
+
+startlon,startlat = lons_segment[0], lats_segment[0]
+stoplon,stoplat = lons_segment[-1], lats_segment[-1]
+az1, az2, circle = great_circle.inv(startlon,startlat,stoplon,stoplat)
+print(f'great circle distance is {circle/meters2km}')
+
+
 # ## The radar heights aren't quite uniform
 # 
 # Spacing between radar height levels differs slightly 
@@ -177,7 +186,7 @@ ax2.set(xlabel='level number', ylabel='height difference (m)');
 # 
 # 
 
-# In[9]:
+# In[6]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
