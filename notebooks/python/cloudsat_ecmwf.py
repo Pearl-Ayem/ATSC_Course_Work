@@ -12,7 +12,7 @@
 
 # #  Read in the height and reflectivity fields
 
-# In[ ]:
+# In[1]:
 
 
 from importlib import reload
@@ -32,7 +32,7 @@ from pyhdf.SD import SD, SDC
 from a301.cloudsat import HDFvd_read, HDFsd_read
 
 
-# In[ ]:
+# In[2]:
 
 
 z_file= list(a301.test_dir.glob('*GEOPROF_GRANULE*hdf'))[0]
@@ -48,7 +48,7 @@ meters2km=1.e3
 # 
 # Note that they have their own height vector EC_height
 
-# In[ ]:
+# In[3]:
 
 
 z_file= list(a301.test_dir.glob('*ECMWF-AUX_GRANULE*hdf'))[0]
@@ -62,7 +62,7 @@ ec_missing = temps_attributes['missing']
 # note that I need to find the missing data before I divide by factor=100 to
 # convert from int16 to float
 
-# In[ ]:
+# In[4]:
 
 
 hit=(radar_reflectivity == radar_missing)
@@ -76,7 +76,7 @@ zvals=ma.masked_invalid(zvals)
 # 
 # You need to enter the start_hour and start_minute for the start time of your cyclone in the granule
 
-# In[ ]:
+# In[5]:
 
 
 first_time=date_times[0]
@@ -102,7 +102,7 @@ len(date_times)
 
 # # convert time to distance by using pyproj to get the greatcircle distance between shots
 
-# In[ ]:
+# In[6]:
 
 
 great_circle=pyproj.Geod(ellps='WGS84')
@@ -122,7 +122,7 @@ distance=np.array(distance)/meters2km
 # in reality, the bin heights are depend on the details of the radar returns, so
 # we would need to historgram the heights into a uniform set of bins -- ignore that for this qualitative picture
 
-# In[ ]:
+# In[7]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -160,7 +160,7 @@ fig.savefig('cloudsat.png')
 
 # # Now subset the ECMWF data
 
-# In[ ]:
+# In[8]:
 
 
 bad_temps = (ec_temps == ec_missing)
@@ -172,7 +172,7 @@ ec_temps=ec_temps[time_hit,:]
 
 # # Plot the ECMWF temperatures for the segment
 
-# In[ ]:
+# In[13]:
 
 
 fig, ax =plt.subplots(1,1,figsize=(15,4))
@@ -190,6 +190,7 @@ ax=plot_field(distance,ec_height_km,ec_temps.T,ax,cmap=cmap_ec,
 ax.set(ylim=[0,10],xlim=(0,1200))
 ax.set(xlabel='distance (km)',ylabel='height (km)',title='ECMWF temps in deg C')
 fig.savefig('temps.png')
+print(ec_height_km.shape,ec_temps.shape)
 
 
 # # Problem -- your task
@@ -205,7 +206,7 @@ fig.savefig('temps.png')
 # 3. use that index to look up the height in ec_height_km
 # 4. save that height in height_vec
 
-# In[ ]:
+# In[10]:
 
 
 #

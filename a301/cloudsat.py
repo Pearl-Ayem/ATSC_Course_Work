@@ -42,14 +42,14 @@ def describevg(refnum,v,vs,sd):
     # Open vgroup in read mode.
     vg = v.attach(refnum)
     print("----------------")
-    print("name:", vg._name, "class:",vg._class, "tag,ref:", end=' ')
+    print("vg name is:", vg._name, "class:",vg._class, "tag,ref:", end=' ')
     print(vg._tag, vg._refnum)
     
     # Show the number of members of each main object type.
-    print("members: ", vg._nmembers, end=' ')
-    print("datasets:", vg.nrefs(HC.DFTAG_NDG), end=' ')
-    print("vdatas:  ", vg.nrefs(HC.DFTAG_VH), end=' ')
-    print("vgroups: ", vg.nrefs(HC.DFTAG_VG))
+    print("num. members: ", vg._nmembers, end=' ')
+    print("num. datasets:", vg.nrefs(HC.DFTAG_NDG), end=' ')
+    print("num. vdatas:  ", vg.nrefs(HC.DFTAG_VH), end=' ')
+    print("num. vgroups: ", vg.nrefs(HC.DFTAG_VG))
 
     # Read the contents of the vgroup.
     members = vg.tagrefs()
@@ -63,6 +63,7 @@ def describevg(refnum,v,vs,sd):
         if tag == HC.DFTAG_VH:
             vd = vs.attach(ref)
             nrecs, intmode, fields, size, name = vd.inquire()
+            print(f"reading {vg._name} and dataset {name}")
             print("  vdata:",name, "tag,ref:",tag, ref)
             print("    fields:",fields)
             print("    nrecs:",nrecs)
@@ -128,14 +129,17 @@ def dump_cloudsat(filename):
         describevg(ref,v,vs,sd)
     return None
 
-def HDFvd_read(filename, variable, Class=None):
-    out=HDFread(filename, variable, Class = Class)
+def HDFvd_read(filename, variable, vgroup=None):
+    out=HDFread(filename, variable, vgroup = vgroup)
     return out
 
-def HDFread(filename, variable, Class=None):
+def HDFread(filename, variable, vgroup=None):
     """
     Extract the data for non-scientific data in V mode of hdf file
     """
+    if vgroup is None:
+        vgroup = 'Geolocation Fields'
+        
     filename=str(filename)
     hdf = HDF(filename, HC.READ)
 
@@ -143,15 +147,29 @@ def HDFread(filename, variable, Class=None):
     sd = SD(filename)
     vs = hdf.vstart()
     v  = hdf.vgstart()
-
-    # Found the class id
-    if Class == None:
-        ref = v.findclass('SWATH Vgroup') # The default value for Geolocation fields
-    else:
-        ref = v.findclass(Class)
+    vg_dict={}
+    ref = -1
+    while 1:
+        try:
+            ref = v.getid(ref)
+            #print('vgroup ref number: ',ref)
+        except HDF4Error as msg:    # no more vgroup
+            break
+        vg = v.attach(ref)
+        # print("----------------")
+        # print("vg name is:", vg._name, "class:",vg._class, "tag,ref:", end=' ')
+        # print(vg._tag, vg._refnum)
+        vg_dict[vg._name]=(vg._tag, vg._refnum)
+        vg.detach()
+        
+    tag, ref = vg_dict[vgroup]
 
     # Open all data of the class
     vg = v.attach(ref)
+    # print("----------------")
+    # print("vg name is:", vg._name, "class:",vg._class, "tag,ref:", end=' ')
+    # print(vg._tag, vg._refnum)
+
     # All fields in the class
     members = vg.tagrefs()
 
@@ -165,7 +183,12 @@ def HDFread(filename, variable, Class=None):
             nrecs.append(nrec)
             names.append(name)
             vd.detach()
-    idx = names.index(variable)
+    try:
+        idx = names.index(variable)
+    except ValueError:
+        error=f'{variable} is not in {names} for vgroup {vgroup}'
+        raise ValueError(error)
+        
     var = vs.attach(members[idx][1])
     V   = var.read(nrecs[idx])
     var.detach()
