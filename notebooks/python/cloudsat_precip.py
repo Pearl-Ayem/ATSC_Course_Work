@@ -7,14 +7,13 @@
 # In[1]:
 
 
-import pdb
+from IPython.core.debugger import set_trace
 
 
 # # Introduction
 # 
-# This notebook finds the the point at which the ECMWF tempearture=0 deg C for each
-# radar pulse and overlays that on the reflectivity plot to check to see whether
-# the bright band occurs at the freezing level
+# This notebook uses the 2C-RAIN-PROFILE data to compare rain rate and precipitable liquid water with
+# the cloudsat reflectivity.
 
 # #  Read in the height and reflectivity fields
 
@@ -31,7 +30,6 @@ from numpy import ma
 import a301
 from a301.cloudsat import get_geo
 from pathlib import Path
-from pyhdf.SD import SD, SDC
 #
 # new functions to read vdata and sds arrays
 #
@@ -86,7 +84,7 @@ zvals=ma.masked_invalid(zvals)
 # 
 # You need to enter the start_hour and start_minute for the start time of your cyclone in the granule
 
-# In[6]:
+# In[ ]:
 
 
 first_time=date_times[0]
@@ -108,11 +106,12 @@ storm_zvals=zvals[time_hit,:]
 storm_height=radar_height[time_hit,:]
 storm_date_times=date_times[time_hit]
 rain_rate=rain_rate[time_hit]
+set_trace()
 
 
 # # convert time to distance by using pyproj to get the greatcircle distance between shots
 
-# In[7]:
+# In[ ]:
 
 
 great_circle=pyproj.Geod(ellps='WGS84')
@@ -130,7 +129,7 @@ distance=np.array(distance)/meters2km
 # We need to customize the subplots so we can share the x axis between the radar reflectivity
 # and the rain_rate, and adjust the sizes to hold a colorbar
 
-# In[8]:
+# In[ ]:
 
 
 get_ipython().run_line_magic('matplotlib', 'inline')
@@ -170,7 +169,7 @@ vmin=-30
 vmax=20
 the_norm=Normalize(vmin=vmin,vmax=vmax,clip=False)
 cmap_ref=cm.plasma
-cmap_ref.set_over('w')
+cmap_ref.set_over('c')
 cmap_ref.set_under('b',alpha=0.2)
 cmap_ref.set_bad('0.75') #75% grey
 
@@ -186,7 +185,7 @@ ax1.set(xlabel='distance (km)',ylabel='height (km)',
 # 
 # Use the second axis to draw the rain rate and redraw the figure
 
-# In[9]:
+# In[ ]:
 
 
 ax2.plot(distance,rain_rate)
@@ -198,14 +197,14 @@ display(fig)
 # 
 # Make a new plot pair -- for variable information see the [dataset docs](http://www.cloudsat.cira.colostate.edu/data-products/level-2c/2c-rain-profile?term=56)
 
-# In[12]:
+# In[ ]:
 
 
 liquid_water, lw_attributes = HDFsd_read(r_file,'precip_liquid_water')
 lw_attributes
 
 
-# In[10]:
+# In[ ]:
 
 
 precip_uncertainty = HDFvd_read(r_file,'rain_rate_uncertainty',vgroup='Data Fields')
@@ -229,7 +228,7 @@ ax2.plot(distance,precip_uncert)
 ax2.set(ylim=[0,15],xlabel='distance (km)',ylabel='rain rate uncertainty (%)');
 
 
-# In[11]:
+# In[ ]:
 
 
 lw_attributes
