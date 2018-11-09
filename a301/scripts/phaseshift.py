@@ -30,6 +30,7 @@ axis1.set_xlabel('horizontal position (in wavelengths)')
 axis1.set_ylabel('amplitude')
 axis1.set_title('cosine waves for 5 phase shifts')
 axis1.legend(loc='best')
+fig1.savefig('cosine_plot.png')
 #
 # add phase shifts and plot sines
 #
@@ -44,6 +45,7 @@ axis2.set_xlabel('horizontal position (in wavelengths)')
 axis2.set_ylabel('amplitude')
 axis2.set_title('sine waves for 5 phase shifts')
 axis2.legend(loc='best')
+fig2.savefig('sine_plot.png')
 
 #
 # make a reflection at 0.75 wavelengths
@@ -62,5 +64,6 @@ axis3.set_xlabel('horizontal position (in wavelengths)')
 axis3.set_ylabel('amplitude at receiver')
 axis3.set_title('phase shift for a reflection occuring at 0.75 wavelengths')
 axis3.legend((line1[0],line2[0]),('first pulse reflected at 1 wavelength','second pulse reflected at 3/4 wavelength'))
+fig3.savefig('reflection_plot.png')
 
 plt.show()
