@@ -1,7 +1,13 @@
-
-# standard imports
-from landsat_metadata import landsat_metadata
-from dnppy import core
+"""
+ported from https://github.com/NASA-DEVELOP/dnppy/tree/master/dnppy/landsat
+"""
+from .landsat_metadata import landsat_metadata
+from . import  core
+import os
+from  pathlib import Path
+import numpy as np
+from PIL import Image as pil_image
+from PIL.TiffTags import TAGS
 import math
 import os
 
@@ -10,91 +16,100 @@ __all__=['toa_reflectance_8',       # complete
          'toa_reflectance_457']     # complete
 
 
-def toa_reflectance_8(band_nums, meta_path, outdir = None):
+def toa_reflectance_8(band_nums, meta_path):
     """
     Converts Landsat 8 bands to Top-of-Atmosphere reflectance. To be performed
     on raw Landsat 8 level 1 data. See link below for details
     see here [http://landsat.usgs.gov/Landsat8_Using_Product.php]
 
-    :param band_nums:   A list of desired band numbers such as [3,4,5]
-    :param meta_path:   The full filepath to the metadata file for those bands
-    :param outdir:      Output directory to save converted files. If left False it will save ouput
-                        files in the same directory as input files.
+    Parameters
+    ----------
 
-    :return output_filelist:    List of files created by this function
+    band_nums: list
+           A list of desired band numbers such as [3, 4, 5]
+
+    meta_path: str or Path object
+             The full filepath to the MTL.txt metadata file for those bands
+
+    Returns
+    -------
+
+    out_dict: dict
+        dictionary with band_num as keys and scenereflectance
     """
 
+    meta_path = Path(meta_path).resolve()
     output_filelist = []
+    out_dict=dict()
 
     # enforce the list of band numbers and grab metadata from the MTL file
     band_nums = core.enf_list(band_nums)
     band_nums = map(str, band_nums)
     OLI_bands = ['1','2','3','4','5','6','7','8','9']
-    meta_path = os.path.abspath(meta_path)
     meta = landsat_metadata(meta_path)
 
     # cycle through each band in the list for calculation, ensuring each is in the list of OLI bands
     for band_num in band_nums:
-        if band_num in OLI_bands:
-
-            # scrape data from the given file path and attributes in the MTL file
-            band_path = meta_path.replace("MTL.txt","B{0}.tif".format(band_num))
-            Qcal = arcpy.Raster(band_path)                        
-            Mp   = getattr(meta,"REFLECTANCE_MULT_BAND_{0}".format(band_num)) # multiplicative scaling factor
-            Ap   = getattr(meta,"REFLECTANCE_ADD_BAND_{0}".format(band_num))  # additive rescaling factor
-            SEA  = getattr(meta,"SUN_ELEVATION")*(math.pi/180)       # sun elevation angle theta_se
-
-            # get rid of the zero values that show as the black background to avoid skewing values
-            null_raster = arcpy.sa.SetNull(Qcal, Qcal, "VALUE = 0")
-
-            # calculate top-of-atmosphere reflectance
-            TOA_ref = (((null_raster * Mp) + Ap)/(math.sin(SEA)))
-
-
-            # save the data to the automated name if outdir is given or in the parent folder if not
-            if outdir is not None:
-                outdir = os.path.abspath(outdir)
-                outname = core.create_outname(outdir, band_path, "TOA_Ref", "tif")
-            else:
-                folder = os.path.split(meta_path)[0]
-                outname = core.create_outname(folder, band_path, "TOA_Ref", "tif")
-                
-            TOA_ref.save(outname)
-            output_filelist.append(outname)
-            print("Saved output at {0}".format(outname))
-
+        if band_num not in OLI_bands:
         # if listed band is not an OLI sensor band, skip it and print message
-        else:
             print("Can only perform reflectance conversion on OLI sensor bands")
             print("Skipping band {0}".format(band_num))
+            continue
+        # scrape data from the given file path and attributes in the MTL file
+        str_path = str(meta_path)
+        band_path  = Path(str_path.replace("MTL.txt",f"B{band_num}.tif"))
+        with pil_image.open(band_path) as img:
+            tiff_meta_dict = {TAGS[key] : img.tag[key] for key in img.tag.keys()}
+            Qcal = np.array(img)
+        hit = (Qcal == 0)
+        Qcal=Qcal.astype(np.float32)
+        Qcal[hit]=np.nan
+        
+        Mp   = getattr(meta,"REFLECTANCE_MULT_BAND_{0}".format(band_num)) # multiplicative scaling factor
+        Ap   = getattr(meta,"REFLECTANCE_ADD_BAND_{0}".format(band_num))  # additive rescaling factor
+        SEA  = getattr(meta,"SUN_ELEVATION")*(math.pi/180)       # sun elevation angle theta_se
 
-    return output_filelist
+        # get rid of the zero values that show as the black background to avoid skewing values
 
+        # calculate top-of-atmosphere reflectance
+        TOA_ref = (((Qcal * Mp) + Ap)/(math.sin(SEA)))
+        out_dict[int(band_num)]=TOA_ref
 
-def toa_reflectance_457(band_nums, meta_path, outdir = None):
+    return out_dict
+
+def toa_reflectance_457(band_nums, meta_path):
     """
     This function is used to convert Landsat 4, 5, or 7 pixel values from
     digital numbers to Top-of-Atmosphere Reflectance. To be performed on raw
     Landsat 4, 5, or 7 data.
 
-    :param band_nums:   A list of desired band numbers such as [3,4,5]
-    :param meta_path:   The full filepath to the metadata file for those bands
-    :param outdir:      Output directory to save converted files. If left False it will save ouput
-                        files in the same directory as input files.
+    Parameters
+    ----------
 
-    :return output_filelist:    List of files created by this function
+    band_nums: list
+           A list of desired band numbers such as [3, 4, 5]
+
+    meta_path: str or Path object
+             The full filepath to the MTL.txt metadata file for those bands
+
+    Returns
+    -------
+
+    out_dict: dict
+        dictionary with band_num as keys and scenereflectance
     """
    
+    meta_path = Path(meta_path).resolve()
     output_filelist = []
+    out_dict=dict()
 
     band_nums = core.enf_list(band_nums)
     band_nums = map(str, band_nums)
 
     # metadata format was changed August 29, 2012. This tool can process either the new or old format
-    f = open(meta_path)
-    MText = f.read()
-
-    meta_path = os.path.abspath(meta_path)
+    with  open(meta_path) as f:
+        MText = f.read()
+        
     metadata = landsat_metadata(meta_path)
     
     # the presence of a PRODUCT_CREATION_TIME category is used to identify old metadata
@@ -133,8 +148,7 @@ def toa_reflectance_457(band_nums, meta_path, outdir = None):
         ESun = (1957.0, 1825.0, 1557.0, 1033.0, 214.9, 0. ,80.72)
         TM_ETM_bands = ['1','2','3','4','5','7']
     else:
-        arcpy.AddError("This tool only works for Landsat 4, 5, or 7")
-        raise arcpy.ExecuteError()
+        raise ValueError("This tool only works for Landsat 4, 5, or 7")
 
     # determing if year is leap year and setting the Days in year accordingly
     if float(year) % 4 == 0: DIY = 366.
@@ -150,51 +164,39 @@ def toa_reflectance_457(band_nums, meta_path, outdir = None):
     
     # Calculating values for each band
     for band_num in band_nums:
-        if band_num in TM_ETM_bands:
-
-            print("Processing Band {0}".format(band_num))
-            pathname = meta_path.replace("MTL.txt", "B{0}.tif".format(band_num))
-            Oraster = arcpy.Raster(pathname)
-         
-            null_raster = arcpy.sa.SetNull(Oraster, Oraster, "VALUE = 0")
-
-            # using the oldMeta/newMeta indices to pull the min/max for radiance/Digital numbers
-            if Meta == "newMeta":
-                LMax    = getattr(metadata, "RADIANCE_MAXIMUM_BAND_{0}".format(band_num))
-                LMin    = getattr(metadata, "RADIANCE_MINIMUM_BAND_{0}".format(band_num))  
-                QCalMax = getattr(metadata, "QUANTIZE_CAL_MAX_BAND_{0}".format(band_num))
-                QCalMin = getattr(metadata, "QUANTIZE_CAL_MIN_BAND_{0}".format(band_num))
-            elif Meta == "oldMeta":
-                LMax    = getattr(metadata, "LMAX_BAND{0}".format(band_num))
-                LMin    = getattr(metadata, "LMIN_BAND{0}".format(band_num))  
-                QCalMax = getattr(metadata, "QCALMAX_BAND{0}".format(band_num))
-                QCalMin = getattr(metadata, "QCALMIN_BAND{0}".format(band_num))
-    
-            Radraster = (((LMax - LMin)/(QCalMax-QCalMin)) * (null_raster - QCalMin)) + LMin
-            Oraster = 0
-            del null_raster
-    
-            # Calculating temperature for band 6 if present
-            Refraster = (math.pi * Radraster * dSun2) / (ESun[int(band_num[0])-1] * math.cos(SZA*(math.pi/180)))
-
-            # construc output names for each band based on whether outdir is set (default is False)
-            if outdir is not None:
-                outdir = os.path.abspath(outdir)
-                BandPath = core.create_outname(outdir, pathname, "TOA_Ref", "tif")
-            else:
-                folder = os.path.split(meta_path)[0]
-                BandPath = core.create_outname(folder, pathname, "TOA_Ref", "tif")
-
-            Refraster.save(BandPath)
-            output_filelist.append(BandPath)
-
-            del Refraster, Radraster
-            print("Reflectance Calculated for Band {0}".format(band_num))
-
-        # if listed band is not a TM/ETM+ sensor band, skip it and print message
-        else:
+        if band_num not in TM_ETM_bands:
+            
             print("Can only perform reflectance conversion on TM/ETM+ sensor bands")
             print("Skipping band {0}".format(band_num))
-         
-    f.close()
-    return output_filelist
+            continue
+
+        print("Processing Band {0}".format(band_num))
+        str_path = str(meta_path)
+        band_path  = Path(str_path.replace("MTL.txt",f"B{band_num}.tif"))
+        with pil_image.open(band_path) as img:
+            tiff_meta_dict = {TAGS[key] : img.tag[key] for key in img.tag.keys()}
+            Qcal = np.array(img)
+        hit = (Qcal == 0)
+        Qcal=Qcal.astype(np.float32)
+        Qcal[hit]=np.nan
+
+        # using the oldMeta/newMeta indices to pull the min/max for radiance/Digital numbers
+        if Meta == "newMeta":
+            LMax    = getattr(metadata, "RADIANCE_MAXIMUM_BAND_{0}".format(band_num))
+            LMin    = getattr(metadata, "RADIANCE_MINIMUM_BAND_{0}".format(band_num))  
+            QCalMax = getattr(metadata, "QUANTIZE_CAL_MAX_BAND_{0}".format(band_num))
+            QCalMin = getattr(metadata, "QUANTIZE_CAL_MIN_BAND_{0}".format(band_num))
+        elif Meta == "oldMeta":
+            LMax    = getattr(metadata, "LMAX_BAND{0}".format(band_num))
+            LMin    = getattr(metadata, "LMIN_BAND{0}".format(band_num))  
+            QCalMax = getattr(metadata, "QCALMAX_BAND{0}".format(band_num))
+            QCalMin = getattr(metadata, "QCALMIN_BAND{0}".format(band_num))
+
+        Radraster = (((LMax - LMin)/(QCalMax-QCalMin)) * (Qcal - QCalMin)) + LMin
+
+        # Calculating temperature for band 6 if present
+        Refraster = (math.pi * Radraster * dSun2) / (ESun[int(band_num[0])-1] * math.cos(SZA*(math.pi/180)))
+        out_dict[int(band_num)]=Refraster
+
+            
+    return out_dict

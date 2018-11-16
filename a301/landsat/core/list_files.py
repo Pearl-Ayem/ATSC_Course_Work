@@ -1,8 +1,8 @@
 __author__ = 'jwely'
 
 import os
-from exists import exists
-from enf_list import enf_list
+from .exists import exists
+from .enf_list import enf_list
 
 
 def list_files(recursive, directory, contains = None, not_contains = None):
@@ -122,4 +122,4 @@ def list_files(recursive, directory, contains = None, not_contains = None):
 
 
 if __name__ == "__main__":
-    print list_files(False, r"C:\Users\Jeff\Desktop\Github\dnppy\docs\build")
+    print(list_files(False, r"C:\Users\Jeff\Desktop\Github\dnppy\docs\build"))

@@ -1,7 +1,7 @@
 __author__ = 'jwely'
 
 import os
-from exists import exists
+from .exists import exists
 
 
 def rename(filename, replace_this, with_this):

@@ -1,28 +1,44 @@
-
+"""
+ported from https://github.com/NASA-DEVELOP/dnppy/tree/master/dnppy/landsat
+"""
 # standard imports
 from .landsat_metadata import landsat_metadata
-import .core as core
+from . import core
 import os
+from pathlib import Path
+import numpy as np
+from PIL import Image as pil_image
+from PIL.TiffTags import TAGS
 
 __all__ = ['toa_radiance_8',          # complete
            'toa_radiance_457']        # complete
 
 
-def toa_radiance_8(band_nums, meta_path, outdir = None):
+def toa_radiance_8(band_nums, meta_path):
     """
     Top of Atmosphere radiance (in Watts/(square meter x steradians x micrometers))
     conversion for landsat 8 data. To be performed on raw Landsat 8
     level 1 data. See link below for details:
     see here http://landsat.usgs.gov/Landsat8_Using_Product.php
 
-    :param band_nums:   A list of desired band numbers such as [3, 4, 5]
-    :param meta_path:   The full filepath to the metadata file for those bands
-    :param outdir:      Output directory to save converted files.
+    Parameters
+    ----------
 
-    :return output_filelist:    List of filepaths created by this function.
+    band_nums: list
+           A list of desired band numbers such as [3, 4, 5]
+
+    meta_path: str or Path object
+             The full filepath to the MTL.txt metadata file for those bands
+
+
+    Returns
+    -------
+
+    out_dict: dict
+        dictionary with band_num as keys and TOA radiance (W/mY2/sr/um) as values
     """
 
-    meta_path = os.path.abspath(meta_path)
+    meta_path = Path(meta_path).resolve()
     output_filelist = []
 
     #enforce list of band numbers and grab the metadata from the MTL file
@@ -33,73 +49,71 @@ def toa_radiance_8(band_nums, meta_path, outdir = None):
     OLI_bands = ['1','2','3','4','5','6','7','8','9']
     
     #loop through each band
+    out_dict=dict()
+    
     for band_num in band_nums:
-        if band_num in OLI_bands:
-
-            #create the band name
-            band_path   = meta_path.replace("MTL.txt","B{0}.tif".format(band_num))
-            #Qcal        = arcpy.Raster(band_path)
-
-            #null_raster = arcpy.sa.SetNull(Qcal, Qcal, "VALUE = 0")
-
-            #scrape the attribute data
-            Ml   = getattr(meta,"RADIANCE_MULT_BAND_{0}".format(band_num)) # multiplicative scaling factor
-            Al   = getattr(meta,"RADIANCE_ADD_BAND_{0}".format(band_num))  # additive rescaling factor
-
-            #calculate Top-of-Atmosphere radiance
-            TOA_rad = (null_raster * Ml) + Al
-            del null_raster
-            
-            # create the output name and save the TOA radiance tiff
-            if "\\" in meta_path:
-                name = meta_path.split("\\")[-1]
-            elif "//" in meta_path:
-                name = meta_path.split("//")[-1]
-                
-            rad_name = name.replace("_MTL.txt", "_B{0}".format(band_num))
-
-            if outdir is not None:
-                outdir = os.path.abspath(outdir)
-                outname = core.create_outname(outdir, rad_name, "TOA_Rad", "tif")
-            else:
-                folder = os.path.split(meta_path)[0]
-                outname = core.create_outname(folder, rad_name, "TOA_Rad", "tif")
-                
-            TOA_rad.save(outname)
-            output_filelist.append(outname)
-            print("Saved toa_radiance at {0}".format(outname))
-
-        #if listed band is not a OLI sensor band, skip it and print message
-        else:
+        print(f'working on band {band_num}')
+        if band_num not in OLI_bands:
             print("Can only perform reflectance conversion on OLI sensor bands")
             print("Skipping band {0}".format(band_num))
+            continue
+        
+        #create the band name
+        str_path = str(meta_path)
+        band_path  = Path(str_path.replace("MTL.txt",f"B{band_num}.tif"))
+        with pil_image.open(band_path) as img:
+            tiff_meta_dict = {TAGS[key] : img.tag[key] for key in img.tag.keys()}
+            Qcal = np.array(img)
+        hit = (Qcal == 0)
+        Qcal=Qcal.astype(np.float32)
+        Qcal[hit]=np.nan
 
-    return output_filelist
+        #scrape the attribute data
+        Ml   = getattr(meta,"RADIANCE_MULT_BAND_{0}".format(band_num)) # multiplicative scaling factor
+        Al   = getattr(meta,"RADIANCE_ADD_BAND_{0}".format(band_num))  # additive rescaling factor
+
+        #calculate Top-of-Atmosphere radiance
+        TOA_rad = (Qcal * Ml) + Al
+        out_dict[int(band_num)]=TOA_rad
+
+
+    return out_dict
 
 
 
 def toa_radiance_457(band_nums, meta_path, outdir = None):
     """
     Top of Atmosphere radiance (in Watts/(square meter x steradians x micrometers))
-    conversion for Landsat 4, 5, and 7 data. To be performed on raw
-    Landsat 4, 5, or 7 level 1 data.
+    conversion for Landsat 4, 5, or 7 level 1 data.
+    See link below for details:
+    see here http://landsat.usgs.gov/Landsat8_Using_Product.php
 
-    :param band_nums:   A list of desired band numbers such as [3, 4, 5]
-    :param meta_path:   The full filepath to the metadata file for those bands
-    :param outdir:      Output directory to save converted files.
+    Parameters
+    ----------
 
-    :return output_filelist:    List of filepaths created by this function.
+    band_nums: list
+           A list of desired band numbers such as [3, 4, 5]
+
+    meta_path: str or Path object
+             The full filepath to the MTL.txt metadata file for those bands
+
+
+    Returns
+    -------
+
+    out_dict: dict
+        dictionary with band_num as keys and TOA radiance (W/mY2/sr/um) as values
     """
-
-    output_filelist = []
-    meta_path = os.path.abspath(meta_path)
+    
+    
+    meta_path = Path(meta_path).resolve()
 
     band_nums = core.enf_list(band_nums)
     band_nums = map(str, band_nums)
 
     #metadata format was changed August 29, 2012. This tool can process either the new or old format
-    f = open(meta_path)
-    MText = f.read()
+    with open(meta_path) as f:
+        MText = f.read()
 
     metadata = landsat_metadata(meta_path)
 
@@ -131,15 +145,12 @@ def toa_radiance_457(band_nums, meta_path, outdir = None):
     spacecraft = getattr(metadata, "SPACECRAFT_ID")
 
     if "7" in spacecraft:
-        ESun = (1969.0, 1840.0, 1551.0, 1044.0, 255.700, 0., 82.07, 1368.00)
         TM_ETM_bands = ['1','2','3','4','5','7','8']
         
     elif "5" in spacecraft:
-        ESun = (1957.0, 1826.0, 1554.0, 1036.0, 215.0, 0. ,80.67)
         TM_ETM_bands = ['1','2','3','4','5','7']
         
     elif "4" in spacecraft:
-        ESun = (1957.0, 1825.0, 1557.0, 1033.0, 214.9, 0. ,80.72)
         TM_ETM_bands = ['1','2','3','4','5','7']
         
     else:
@@ -148,15 +159,24 @@ def toa_radiance_457(band_nums, meta_path, outdir = None):
         #raise arcpy.ExecuteError()
 
     #Calculating values for each band
+    out_dict={}
     for band_num in band_nums:
-        if band_num in TM_ETM_bands:
+        if band_num not in TM_ETM_bands:
+            print("Can only perform reflectance conversion on OLI sensor bands")
+            print("Skipping band {0}".format(band_num))
+            continue
 
             print("Processing Band {0}".format(band_num))
-            pathname = meta_path.replace("MTL.txt", "B{0}.tif".format(band_num))
-            #Oraster = arcpy.Raster(pathname)
+            str_path = str(meta_path)
+            band_path  = Path(str_path.replace("MTL.txt","B{band_num}.tif"))
 
-            #null_raster = arcpy.sa.SetNull(Oraster, Oraster, "VALUE = 0")
-
+            with pil_image.open(band_path) as img:
+                tiff_meta_dict = {TAGS[key] : img.tag[key] for key in img.tag.keys()}
+                Qcal = np.array(img)
+            hit = (Qcal == 0)
+            Qcal=Qcal.astype(np.float32)
+            Qcal[hit]=np.nan
+            
             #using the oldMeta/newMeta indixes to pull the min/max for radiance/Digital numbers
             if Meta == "newMeta":
                 LMax    = getattr(metadata, "RADIANCE_MAXIMUM_BAND_{0}".format(band_num))
@@ -170,31 +190,7 @@ def toa_radiance_457(band_nums, meta_path, outdir = None):
                 QCalMax = getattr(metadata, "QCALMAX_BAND{0}".format(band_num))
                 QCalMin = getattr(metadata, "QCALMIN_BAND{0}".format(band_num))
 
-            Radraster = (((LMax - LMin)/(QCalMax-QCalMin)) * (null_raster - QCalMin)) + LMin
-            Oraster = 0
-            del null_raster
-
-            band_rad = "{0}_B{1}".format(TileName, band_num)
-
-            #create the output name and save the TOA radiance tiff
-            if outdir is not None:
-                outdir = os.path.abspath(outdir)
-                outname = core.create_outname(outdir, band_rad, "TOA_Rad", "tif")
-            else:
-                folder = os.path.split(meta_path)[0]
-                outname = core.create_outname(folder, band_rad, "TOA_Rad", "tif")
-                
-            Radraster.save(outname)
-            output_filelist.append(outname)
+            Radraster = (((LMax - LMin)/(QCalMax-QCalMin)) * (Qcal - QCalMin)) + LMin
+            out_dict[int(band_num)]=Radraster
             
-            del Radraster
-
-            print("toa radiance saved for Band {0}".format(band_num))
-
-        #if listed band is not a TM/ETM+ sensor band, skip it and print message
-        else:
-            print("Can only perform reflectance conversion on TM/ETM+ sensor bands")
-            print("Skipping band {0}".format(band_num))
-         
-    f.close()
-    return output_filelist
+    return out_dict

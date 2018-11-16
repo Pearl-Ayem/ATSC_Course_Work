@@ -1,7 +1,7 @@
 __author__ = 'jwely'
 
 import os
-from list_files import list_files
+from .list_files import list_files
 
 
 def enf_filelist(filelist, extension = None):

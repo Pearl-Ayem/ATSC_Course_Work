@@ -9,12 +9,12 @@ __author__ = ["jwely",
               ]
 
 # local imports
-from run_command import *
-from create_outname import *
-from enf_filelist import *
-from enf_list import *
-from exists import *
-from list_files import *
-from move import *
-from rename import *
-from install_from_wheel import *
+from .run_command import run_command, _flatten_args
+from .create_outname import create_outname
+from .enf_filelist import *
+from .enf_list import *
+from .exists import *
+from .list_files import *
+from .move import *
+from .rename import *
+from .install_from_wheel import *
