@@ -32,6 +32,7 @@ from pathlib import Path
 import shutil
 import a301
 import pandas as pd
+import pdb
 
 class NoDataException(Exception):
     pass
@@ -45,7 +46,8 @@ def read_soundings():
     return sound_dict
 
 
-def download(filename,root='https://clouds.eos.ubc.ca/~phil/courses/atsc301/downloads'):
+def download(filename,root='https://clouds.eos.ubc.ca/~phil/courses/atsc301/downloads',
+               dest_folder=None):
     """
     copy file filename from http://clouds.eos.ubc.ca/~phil/courses/atsc301/downloads to 
     the local directory.  If local file exists, report file size and quit.
@@ -56,8 +58,12 @@ def download(filename,root='https://clouds.eos.ubc.ca/~phil/courses/atsc301/down
     filename: string
       name of file to fetch from 
 
+    root: optional string 
+          to specifiy a different download url
 
-    root: optional string to specifiy a different download url
+    dest_folder: optional string or Path object
+          to specifify a folder besides the current folder to put the files
+          will be created it it doesn't exist
 
     Returns
     -------
@@ -66,8 +72,21 @@ def download(filename,root='https://clouds.eos.ubc.ca/~phil/courses/atsc301/down
     """
     url = '{}/{}'.format(root,filename)
     print('trying {}'.format(url))
-    filepath = Path('./{}'.format(filename))
-    print('writing to: {}'.format(str(filepath)))
+    #
+    # use current directory if dest_dir not specified
+    #
+    if dest_folder is None:
+        dest_path=Path()
+    else:
+        dest_path=Path(dest_folder).resolve()
+        dest_path.mkdir(parents=True, exist_ok=True)
+    #
+    # filename may contain subfolders
+    #
+    filepath=Path(filename)
+    filename = filepath.name
+    filepath = dest_path / Path(filename)
+    print(f'writing to: {filepath}')
     if filepath.exists():
         the_size = filepath.stat().st_size
         print(('\n{} already exists\n'
@@ -78,9 +97,8 @@ def download(filename,root='https://clouds.eos.ubc.ca/~phil/courses/atsc301/down
     tempfile = str(filepath) + '_tmp'
     temppath = Path(tempfile)
     try:
-        with open(tempfile, 'wb') as localfile:
-            temppath=Path(tempfile)
-            print('writing temporary file {}'.format(temppath))
+        with open(temppath, 'wb') as localfile:
+            print(f'writing temporary file {temppath}')
             response = requests.get(url, stream=True)
             #
             # treat a 'Not Found' response differently, since you want to catch

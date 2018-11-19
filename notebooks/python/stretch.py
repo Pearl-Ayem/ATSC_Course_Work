@@ -10,6 +10,7 @@
 
 
 import a301
+import pdb
 from pathlib import Path
 #import rasterio
 from IPython.display import Image
@@ -28,6 +29,7 @@ data_dir=june_2015
 tiff_file=list(data_dir.glob("*B1.TIF"))[0]
 meta_file=list(data_dir.glob("*MTL.txt"))[0]
 #jpeg_file=list(data_dir.glob("*T1.jpg"))[0]
+help(img_as_float)
 
 
 # In[2]:
