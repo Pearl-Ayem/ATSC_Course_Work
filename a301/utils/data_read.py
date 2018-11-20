@@ -71,6 +71,7 @@ def download(filename,root='https://clouds.eos.ubc.ca/~phil/courses/atsc301/down
     Side effect: Creates a copy of that file in the local directory
     """
     url = '{}/{}'.format(root,filename)
+    url = url.replace(r"\","/")
     print('trying {}'.format(url))
     #
     # use current directory if dest_dir not specified
