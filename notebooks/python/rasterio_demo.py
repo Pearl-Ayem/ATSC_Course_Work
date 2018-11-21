@@ -10,7 +10,7 @@
 # and uses [rasterio](https://rasterio.readthedocs.io/en/latest/index.html) to write
 # out new 3-channel color tiff, jpeg and png files
 
-# In[48]:
+# In[1]:
 
 
 from pathlib import Path
@@ -38,7 +38,7 @@ dest_folder=a301.data_dir / Path("landsat8/vancouver")
 
 for the_file in filenames:
     landsat_tif = Path('landsat_scenes/l8_vancouver') / Path(the_file)
-    download(landsat_tif,dest_folder=dest_folder)
+    download(str(landsat_tif),dest_folder=dest_folder)
 band2=list(dest_folder.glob("*_B2.TIF"))[0]
 band3=list(dest_folder.glob("*_B3.TIF"))[0]
 band4=list(dest_folder.glob("*_B4.TIF"))[0]
@@ -52,7 +52,7 @@ band4=list(dest_folder.glob("*_B4.TIF"))[0]
 # 
 # Save the image profile, coordinate reference system (crs) and affine transform for inspection -- these will be the same for every band in the image
 
-# In[43]:
+# In[4]:
 
 
 with rasterio.open(band2) as b2_raster:
@@ -68,7 +68,7 @@ with rasterio.open(band4) as b4_raster:
 
 # ## The profile for this image
 
-# In[47]:
+# In[5]:
 
 
 print(f"\nprofile: {pprint.pformat(profile)}\n")
@@ -79,7 +79,7 @@ print(f"\nprofile: {pprint.pformat(profile)}\n")
 # Make an empty 3-d array to hold the three channels.  We are going to scale
 # each band to the range 0-255 so specify 8 bit np.uint8 words
 
-# In[26]:
+# In[6]:
 
 
 channels=np.empty([3,b2_data.shape[0],b2_data.shape[1]],dtype=np.uint8)
@@ -90,7 +90,7 @@ channels=np.empty([3,b2_data.shape[0],b2_data.shape[1]],dtype=np.uint8)
 # Do a histogram stretch on each band using skimage.exposure and save it
 # into the 3-d array.
 
-# In[31]:
+# In[7]:
 
 
 from skimage import  img_as_ubyte
@@ -102,7 +102,7 @@ for index,image in enumerate([b4_data,b3_data,b2_data]):
 
 # # Write out the geotiff file
 
-# In[32]:
+# In[8]:
 
 
 tif_filename = dest_folder / Path('vancouver_432.tiff')
@@ -119,7 +119,7 @@ with rasterio.open(tif_filename,'w',driver='GTiff',
 
 # # Read the geotiff file and convert to png and jpeg
 
-# In[51]:
+# In[9]:
 
 
 with rasterio.open(tif_filename) as infile:
@@ -148,7 +148,7 @@ with rasterio.open(tif_filename) as infile:
 
 # # Display the jpeg file
 
-# In[42]:
+# In[10]:
 
 
 from IPython.display import Image
@@ -159,7 +159,7 @@ Image(str(jpeg_filename))
 # 
 # Question:  Why do these two images look so different?
 
-# In[56]:
+# In[11]:
 
 
 glovis= a301.test_dir / Path('glovis_vancouver.png')
