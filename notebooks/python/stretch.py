@@ -84,6 +84,7 @@ ax.imshow(img_eq, origin='lower', extent=[xmin, xmax, ymin, ymax], transform=crs
           interpolation='nearest')
 ax.coastlines(resolution='10m',color='red',lw=1)
 ax.set_extent([xmin,xmax,ymin,ymax],crs)
+xmin,xmax,ymin,ymax
 
 
 # In[7]:

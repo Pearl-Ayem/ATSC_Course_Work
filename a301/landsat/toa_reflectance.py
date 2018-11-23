@@ -15,6 +15,38 @@ import os
 __all__=['toa_reflectance_8',       # complete       
          'toa_reflectance_457']     # complete
 
+def cal_reflc_8(np_image,band_num,meta):
+    """
+    calculate reflectance
+
+    Parameters
+    ----------
+
+    np_image: numpy array
+        landsat counts
+
+    band_num: str
+        band number
+
+    meta: metadata object
+        satellite metadata from landsat_metadata
+
+    Returns
+    -------
+
+    refl: numpy array (float)
+       band reflectance
+    """
+    Mp   = getattr(meta,"REFLECTANCE_MULT_BAND_{0}".format(band_num)) # multiplicative scaling factor
+    Ap   = getattr(meta,"REFLECTANCE_ADD_BAND_{0}".format(band_num))  # additive rescaling factor
+    SEA  = getattr(meta,"SUN_ELEVATION")*(math.pi/180)       # sun elevation angle theta_se
+
+
+    # calculate top-of-atmosphere reflectance
+    TOA_refl = (((np_image * Mp) + Ap)/(math.sin(SEA)))
+            
+    return TOA_refl
+
 
 def toa_reflectance_8(band_nums, meta_path):
     """
@@ -61,21 +93,15 @@ def toa_reflectance_8(band_nums, meta_path):
         with pil_image.open(band_path) as img:
             tiff_meta_dict = {TAGS[key] : img.tag[key] for key in img.tag.keys()}
             Qcal = np.array(img)
+        # get rid of the zero values that show as the black background to avoid skewing values
+            
         hit = (Qcal == 0)
         Qcal=Qcal.astype(np.float32)
         Qcal[hit]=np.nan
-        
-        Mp   = getattr(meta,"REFLECTANCE_MULT_BAND_{0}".format(band_num)) # multiplicative scaling factor
-        Ap   = getattr(meta,"REFLECTANCE_ADD_BAND_{0}".format(band_num))  # additive rescaling factor
-        SEA  = getattr(meta,"SUN_ELEVATION")*(math.pi/180)       # sun elevation angle theta_se
-
-        # get rid of the zero values that show as the black background to avoid skewing values
-
-        # calculate top-of-atmosphere reflectance
-        TOA_ref = (((Qcal * Mp) + Ap)/(math.sin(SEA)))
-        out_dict[int(band_num)]=TOA_ref
-
+        TOA_refl=cal_reflc_8(Qcal,band_num,meta)
+        out_dict[int(band_num)]=TOA_refl
     return out_dict
+
 
 def toa_reflectance_457(band_nums, meta_path):
     """
