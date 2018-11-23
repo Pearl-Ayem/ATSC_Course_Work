@@ -7,8 +7,7 @@ from . import core
 import os
 from pathlib import Path
 import numpy as np
-from PIL import Image as pil_image
-from PIL.TiffTags import TAGS
+import rasterio
 
 __all__ = ['toa_radiance_8',          # complete
            'toa_radiance_457']        # complete
@@ -61,9 +60,9 @@ def toa_radiance_8(band_nums, meta_path):
         #create the band name
         str_path = str(meta_path)
         band_path  = Path(str_path.replace("MTL.txt",f"B{band_num}.TIF"))
-        with pil_image.open(band_path) as img:
-            tiff_meta_dict = {TAGS[key] : img.tag[key] for key in img.tag.keys()}
-            Qcal = np.array(img)
+        with rasterio.open(str(band_path)) as raster:
+            Qcal = raster.read(1)
+
         hit = (Qcal == 0)
         Qcal=Qcal.astype(np.float32)
         Qcal[hit]=np.nan
@@ -170,9 +169,9 @@ def toa_radiance_457(band_nums, meta_path, outdir = None):
         str_path = str(meta_path)
         band_path  = Path(str_path.replace("MTL.txt",f"B{band_num}.TIF"))
 
-        with pil_image.open(band_path) as img:
-            tiff_meta_dict = {TAGS[key] : img.tag[key] for key in img.tag.keys()}
-            Qcal = np.array(img)
+        with rasterio.open(str(band_path)) as raster:
+            Qcal = raster.read(1)
+            
         hit = (Qcal == 0)
         Qcal=Qcal.astype(np.float32)
         Qcal[hit]=np.nan
