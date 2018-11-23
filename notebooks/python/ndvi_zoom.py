@@ -56,7 +56,7 @@ mtl_file=list(dest_folder.glob("*MTL.txt"))[0]
 # 
 # We need to keep both map_transform (the affine transform for the full scened, and the projection transform from pyproj (called proj_transform below)
 
-# In[38]:
+# In[3]:
 
 
 with rasterio.open(band5) as b5_raster:
@@ -94,7 +94,7 @@ ubc_x, ubc_y =proj_transform(p_latlon,p_utm,ubc_lon, ubc_lat)
 # Now we need to use the affine transform to go between x,y and 
 # col, row on the image.  The next cell creates two slice objects that extend 100 pixels on either side of the center point.  The tilde (~) in front of the transform indicates that we're going from x,y to col,row, instead of col,row to x,y.  (See [this blog entry](http://www.perrygeo.com/python-affine-transforms.html) for reference.)
 
-# In[24]:
+# In[6]:
 
 
 ubc_row, ubc_col = ~map_transform*(ubc_x,ubc_y)
@@ -107,7 +107,7 @@ x_slice,y_slice
 
 # # Plot the raw band 5 image in grey, clipped to reflectivities below 0.6
 
-# In[25]:
+# In[7]:
 
 
 vmin=0.0
@@ -128,7 +128,7 @@ ax.imshow(section,cmap=pal,norm=the_norm);
 # First we need to add a third dimension to the np.array, because
 # rasterio expects [band,x,y] for its writer.  Do this with np.newaxis
 
-# In[26]:
+# In[8]:
 
 
 print(section.shape)
@@ -140,7 +140,7 @@ print(out.shape)
 # 
 # It will have a new upper left hand corner but the same 30 meter pixel size
 
-# In[27]:
+# In[9]:
 
 
 the_win=Window(ubc_col-100,ubc_row-100,200,200)
@@ -151,7 +151,7 @@ with rasterio.open(band5) as b5_raster:
 
 # # Now write this out to small_file.tiff
 
-# In[28]:
+# In[10]:
 
 
 tif_filename=a301.data_dir / Path('small_file.tiff')    
@@ -174,14 +174,14 @@ print(f"section profile: {pprint.pformat(new_profile)}")
 # 
 # Mark the center with a 'ro' dot using ax.plot  (coastline doesn't seem to be working at the moment)
 
-# In[30]:
+# In[11]:
 
 
 xmin,ymin = win_transform*(0,0)        
 xmax,ymax = win_transform*(the_win.width,the_win.height)
 
 
-# In[39]:
+# In[12]:
 
 
 projection=cartopy.crs.epsg(crs.to_epsg())

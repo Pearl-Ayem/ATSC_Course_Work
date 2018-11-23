@@ -6,8 +6,7 @@ from . import  core
 import os
 from  pathlib import Path
 import numpy as np
-from PIL import Image as pil_image
-from PIL.TiffTags import TAGS
+import rasterio
 import math
 import os
 
@@ -15,7 +14,7 @@ import os
 __all__=['toa_reflectance_8',       # complete       
          'toa_reflectance_457']     # complete
 
-def cal_reflc_8(np_image,band_num,meta):
+def calc_reflc_8(np_image,band_num,meta):
     """
     calculate reflectance
 
@@ -89,16 +88,13 @@ def toa_reflectance_8(band_nums, meta_path):
             continue
         # scrape data from the given file path and attributes in the MTL file
         str_path = str(meta_path)
-        band_path  = Path(str_path.replace("MTL.txt",f"B{band_num}.tif"))
-        with pil_image.open(band_path) as img:
-            tiff_meta_dict = {TAGS[key] : img.tag[key] for key in img.tag.keys()}
-            Qcal = np.array(img)
-        # get rid of the zero values that show as the black background to avoid skewing values
-            
+        band_path  = Path(str_path.replace("MTL.txt",f"B{band_num}.TIF"))
+        with rasterio.open(str(band_path)) as raster:
+            Qcal = raster.read(1)
         hit = (Qcal == 0)
         Qcal=Qcal.astype(np.float32)
         Qcal[hit]=np.nan
-        TOA_refl=cal_reflc_8(Qcal,band_num,meta)
+        TOA_refl=calc_reflc_8(Qcal,band_num,meta)
         out_dict[int(band_num)]=TOA_refl
     return out_dict
 
@@ -198,10 +194,9 @@ def toa_reflectance_457(band_nums, meta_path):
 
         print("Processing Band {0}".format(band_num))
         str_path = str(meta_path)
-        band_path  = Path(str_path.replace("MTL.txt",f"B{band_num}.tif"))
-        with pil_image.open(band_path) as img:
-            tiff_meta_dict = {TAGS[key] : img.tag[key] for key in img.tag.keys()}
-            Qcal = np.array(img)
+        band_path  = Path(str_path.replace("MTL.txt",f"B{band_num}.TIF"))
+        with rasterio.open(str(band_path)) as raster:
+            Qcal = raster.read(1)
         hit = (Qcal == 0)
         Qcal=Qcal.astype(np.float32)
         Qcal[hit]=np.nan

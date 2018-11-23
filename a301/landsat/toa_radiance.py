@@ -60,7 +60,7 @@ def toa_radiance_8(band_nums, meta_path):
         
         #create the band name
         str_path = str(meta_path)
-        band_path  = Path(str_path.replace("MTL.txt",f"B{band_num}.tif"))
+        band_path  = Path(str_path.replace("MTL.txt",f"B{band_num}.TIF"))
         with pil_image.open(band_path) as img:
             tiff_meta_dict = {TAGS[key] : img.tag[key] for key in img.tag.keys()}
             Qcal = np.array(img)
@@ -166,31 +166,31 @@ def toa_radiance_457(band_nums, meta_path, outdir = None):
             print("Skipping band {0}".format(band_num))
             continue
 
-            print("Processing Band {0}".format(band_num))
-            str_path = str(meta_path)
-            band_path  = Path(str_path.replace("MTL.txt","B{band_num}.tif"))
+        print("Processing Band {0}".format(band_num))
+        str_path = str(meta_path)
+        band_path  = Path(str_path.replace("MTL.txt",f"B{band_num}.TIF"))
 
-            with pil_image.open(band_path) as img:
-                tiff_meta_dict = {TAGS[key] : img.tag[key] for key in img.tag.keys()}
-                Qcal = np.array(img)
-            hit = (Qcal == 0)
-            Qcal=Qcal.astype(np.float32)
-            Qcal[hit]=np.nan
-            
-            #using the oldMeta/newMeta indixes to pull the min/max for radiance/Digital numbers
-            if Meta == "newMeta":
-                LMax    = getattr(metadata, "RADIANCE_MAXIMUM_BAND_{0}".format(band_num))
-                LMin    = getattr(metadata, "RADIANCE_MINIMUM_BAND_{0}".format(band_num))  
-                QCalMax = getattr(metadata, "QUANTIZE_CAL_MAX_BAND_{0}".format(band_num))
-                QCalMin = getattr(metadata, "QUANTIZE_CAL_MIN_BAND_{0}".format(band_num))
-                
-            elif Meta == "oldMeta":
-                LMax    = getattr(metadata, "LMAX_BAND{0}".format(band_num))
-                LMin    = getattr(metadata, "LMIN_BAND{0}".format(band_num))  
-                QCalMax = getattr(metadata, "QCALMAX_BAND{0}".format(band_num))
-                QCalMin = getattr(metadata, "QCALMIN_BAND{0}".format(band_num))
+        with pil_image.open(band_path) as img:
+            tiff_meta_dict = {TAGS[key] : img.tag[key] for key in img.tag.keys()}
+            Qcal = np.array(img)
+        hit = (Qcal == 0)
+        Qcal=Qcal.astype(np.float32)
+        Qcal[hit]=np.nan
 
-            Radraster = (((LMax - LMin)/(QCalMax-QCalMin)) * (Qcal - QCalMin)) + LMin
-            out_dict[int(band_num)]=Radraster
+        #using the oldMeta/newMeta indixes to pull the min/max for radiance/Digital numbers
+        if Meta == "newMeta":
+            LMax    = getattr(metadata, "RADIANCE_MAXIMUM_BAND_{0}".format(band_num))
+            LMin    = getattr(metadata, "RADIANCE_MINIMUM_BAND_{0}".format(band_num))  
+            QCalMax = getattr(metadata, "QUANTIZE_CAL_MAX_BAND_{0}".format(band_num))
+            QCalMin = getattr(metadata, "QUANTIZE_CAL_MIN_BAND_{0}".format(band_num))
+
+        elif Meta == "oldMeta":
+            LMax    = getattr(metadata, "LMAX_BAND{0}".format(band_num))
+            LMin    = getattr(metadata, "LMIN_BAND{0}".format(band_num))  
+            QCalMax = getattr(metadata, "QCALMAX_BAND{0}".format(band_num))
+            QCalMin = getattr(metadata, "QCALMIN_BAND{0}".format(band_num))
+
+        Radraster = (((LMax - LMin)/(QCalMax-QCalMin)) * (Qcal - QCalMin)) + LMin
+        out_dict[int(band_num)]=Radraster
             
     return out_dict
