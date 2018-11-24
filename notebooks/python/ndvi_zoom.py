@@ -18,7 +18,7 @@
 # 
 # 5. reads in a coastline from the openstreetmaps project and plots that.
 
-# In[1]:
+# In[15]:
 
 
 import rasterio
@@ -33,11 +33,15 @@ from pyproj import transform as proj_transform
 from pyproj import Proj
 from a301.landsat.toa_reflectance import toa_reflectance_8
 import pprint
+from a301.utils.data_read import download
 
 filenames=["LC08_L1TP_047026_20150614_20180131_01_T1_B4.TIF",
     "LC08_L1TP_047026_20150614_20180131_01_T1_B5.TIF",
     "LC08_L1TP_047026_20150614_20180131_01_T1_MTL.txt"]
 dest_folder=a301.data_dir / Path("landsat8/vancouver")
+for the_file in filenames:
+    landsat_tif = Path('landsat_scenes/l8_vancouver') / Path(the_file)
+    download(str(landsat_tif),dest_folder=dest_folder)
 
 
 # # Get the tiff files and calculate band 5 reflectance
