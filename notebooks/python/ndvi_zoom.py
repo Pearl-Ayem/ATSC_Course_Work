@@ -34,6 +34,7 @@ from pyproj import Proj
 from a301.landsat.toa_reflectance import toa_reflectance_8
 import pprint
 from a301.utils.data_read import download
+from pathlib import Path
 
 filenames=["LC08_L1TP_047026_20150614_20180131_01_T1_B4.TIF",
     "LC08_L1TP_047026_20150614_20180131_01_T1_B5.TIF",
