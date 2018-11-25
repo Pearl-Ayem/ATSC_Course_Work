@@ -119,13 +119,17 @@ ax.set_extent(image_extent,crs=cartopy_crs)
 
 # ## Read the shape file and add the coastline to the image
 # 
-# Note that PlateCarree is another name for WGS84 datum, simple lat/lon which is the projection of the coastlines-split-4326 shapefile.
+# Note that PlateCarree is another name for WGS84 datum, simple lat/lon which is the projection of the coastlines-split-4326 shapefile.  Openstreetmap projection for this dataset is https://epsg.io/3857 (not 4326)
 
-# In[6]:
+# In[7]:
 
 
 from cartopy.io import shapereader
-shape_project=cartopy.crs.PlateCarree()
+#
+# official openstreetmap projection
+# https://epsg.io/3857
+#
+shape_project=cartopy.crs.epsg(3857)
 shp = shapereader.Reader(str(a301.test_dir / 
                              Path("ubc_coastlines/lines.shp")))
 for record, geometry in zip(shp.records(), shp.geometries()):
