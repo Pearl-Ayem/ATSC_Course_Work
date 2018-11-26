@@ -125,8 +125,7 @@ ubc_ul_xy,ubc_lr_xy
 
 # # Plot the raw band 5 image, clipped to reflectivities below 0.6
 # 
-# Note that the origin is "upper" because the (0,0) pixel is the upper
-# left corner.  This is a simple check that we got the right section.
+# This is a simple check that we got the right section.
 
 # In[8]:
 
@@ -154,8 +153,8 @@ ax.imshow(section,cmap=pal,norm=the_norm,origin="upper");
 cartopy_crs=cartopy.crs.epsg(crs.to_epsg())
 fig, ax = plt.subplots(1, 1,figsize=[15,25],
                        subplot_kw={'projection': cartopy_crs})
-image_extent=[ubc_ul_xy[0],ubc_lr_xy[0],ubc_ul_xy[1],ubc_lr_xy[1]]
-ax.imshow(section,cmap=pal,norm=the_norm,origin="lower",
+image_extent=[ubc_ul_xy[0],ubc_lr_xy[0],ubc_lr_xy[1],ubc_ul_xy[1]]
+ax.imshow(section,cmap=pal,norm=the_norm,origin="upper",
          extent=image_extent,transform=cartopy_crs,alpha=0.8);
 ax.coastlines(resolution='10m',color='red',lw=2);
 ax.plot(ubc_x, ubc_y,'ro',markersize=25)
@@ -182,7 +181,7 @@ ax.set_extent(image_extent,crs=cartopy_crs)
 # In addition, need to add a third dimension to the section array, because
 # rasterio expects [band,x,y] for its writer.  Do this with np.newaxis in the next cell
 
-# In[20]:
+# In[10]:
 
 
 image_height, image_width = section.shape

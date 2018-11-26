@@ -48,7 +48,8 @@ print(list(refl.keys()))
 hit1 = ~np.isnan(refl[1])
 hit2 = refl[1] > 1.5e-1
 hit=np.logical_and(hit1,hit2)
-plt.hist(refl[1][hit].ravel());
+plt.hist(refl[1][hit].ravel())
+plt.title('band 1 reflectance');
 
 
 # In[3]:
@@ -58,5 +59,6 @@ rad=rad_fun([1],meta_file)
 hit1 = ~np.isnan(rad[1])
 hit2 = rad[1] > 1.5e-1
 hit=np.logical_and(hit1,hit2)
-plt.hist(rad[1][hit].ravel());
+plt.hist(rad[1][hit].ravel())
+plt.title("band 1 radiance W/m^2/micron/sr")
 

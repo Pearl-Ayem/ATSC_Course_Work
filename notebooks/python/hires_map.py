@@ -109,8 +109,8 @@ pal.set_under('k')  #color cells < vmin black
 cartopy_crs=cartopy.crs.epsg(crs.to_epsg())
 fig, ax = plt.subplots(1, 1,figsize=[15,25],
                        subplot_kw={'projection': cartopy_crs})
-image_extent=[ubc_ul_xy[0],ubc_lr_xy[0],ubc_ul_xy[1],ubc_lr_xy[1]]
-ax.imshow(refl,origin="lower",
+image_extent=[ubc_ul_xy[0],ubc_lr_xy[0],ubc_lr_xy[1],ubc_ul_xy[1]]
+ax.imshow(refl,origin="upper",
          extent=image_extent,transform=cartopy_crs,
          cmap=pal,norm=the_norm);
 ax.plot(ubc_x, ubc_y,'ro',markersize=25)
@@ -119,17 +119,13 @@ ax.set_extent(image_extent,crs=cartopy_crs)
 
 # ## Read the shape file and add the coastline to the image
 # 
-# Note that PlateCarree is another name for WGS84 datum, simple lat/lon which is the projection of the coastlines-split-4326 shapefile.  Openstreetmap projection for this dataset is https://epsg.io/3857 (not 4326)
+# Note that PlateCarree is another name for WGS84 datum, simple lat/lon which is the projection of the coastlines-split-4326 shapefile.
 
-# In[7]:
+# In[6]:
 
 
 from cartopy.io import shapereader
-#
-# official openstreetmap projection
-# https://epsg.io/3857
-#
-shape_project=cartopy.crs.epsg(3857)
+shape_project=cartopy.crs.PlateCarree()
 shp = shapereader.Reader(str(a301.test_dir / 
                              Path("ubc_coastlines/lines.shp")))
 for record, geometry in zip(shp.records(), shp.geometries()):
