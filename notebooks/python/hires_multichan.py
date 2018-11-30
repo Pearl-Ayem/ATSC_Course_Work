@@ -130,11 +130,11 @@ ax1.set_title('band 3 green reflectance');
 
 # # Compare the green and red bands
 
-# In[8]:
+# In[11]:
 
 
 fig, (ax1,ax2,ax3) = plt.subplots(1,3,figsize=(15,4))
-diff = refl_dict[4] - refl_dict[3]
+diff = refl_dict[5] - refl_dict[4]
 ax1.hist(refl_dict[3][~np.isnan(refl_dict[3])].flat)
 ax2.hist(refl_dict[4][~np.isnan(refl_dict[4])].flat)
 ax3.hist(diff[~np.isnan(diff)].flat)

@@ -13,11 +13,34 @@ import os
 
 __all__=['toa_reflectance_8',       # complete       
          'toa_reflectance_457',
-         'calc_refl_8',
+         'calc_reflc_8',
          'calc_refl_457']     # complete
 
 def calc_refl_457(np_image,band_num,meta_path):
-    
+    """
+    Calculate the TOA reflectivity for landsat 4, 5, 7
+
+    Parameters
+    ----------
+
+    np_image: ndarray, 2-D, uint16
+          landsat scene counts
+
+    band_num:  str
+        landsat ban
+
+    meta_path: Path object
+       path to MTL.txt file for scene
+
+    Returns
+    -------
+
+    Refraster: ndarray, 2-d, float32 
+       directional reflectance for the scene, unitless
+    """
+
+    if not isinstance(meta_path,str):
+        raise ValueError("calc_refl_457 requires a str type for meta_path, not metadata")
     with  open(meta_path) as f:
         MText = f.read()
         
@@ -105,16 +128,19 @@ def calc_reflc_8(np_image,band_num,meta):
     band_num: str or int
         band number
 
-    meta: metadata object
+    meta: metadata object or str
         satellite metadata from landsat_metadata
 
     Returns
     -------
 
-    refl: numpy array (float)
+    TOA_refl: numpy array (float32), unitless
        band reflectance
     """
     band_num=int(band_num)
+    if isinstance(meta,str) or isinstance (meta,Path):
+        meta = landsat_metadata(meta)
+        
     Mp   = getattr(meta,"REFLECTANCE_MULT_BAND_{0}".format(band_num)) # multiplicative scaling factor
     Ap   = getattr(meta,"REFLECTANCE_ADD_BAND_{0}".format(band_num))  # additive rescaling factor
     SEA  = getattr(meta,"SUN_ELEVATION")*(math.pi/180)       # sun elevation angle theta_se

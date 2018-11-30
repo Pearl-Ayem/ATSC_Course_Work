@@ -186,7 +186,7 @@ ax.set_extent(image_extent,crs=cartopy_crs)
 
 image_height, image_width = section.shape
 ul_x, ul_y = ubc_ul_xy[0], ubc_ul_xy[1]
-new_affine=(30.,0.,ul_x,0.,-30.,ul_y)
+new_affine=Affine(30.,0.,ul_x,0.,-30.,ul_y)
 out_section=section[np.newaxis,...]
 print(out_section.shape)
 
