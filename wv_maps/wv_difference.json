@@ -1,0 +1,76 @@
+{
+    "modismeta": {
+        "orbit": 65914,
+        "daynight": "Day",
+        "filename": "MYD05_L2.A2014267.1150.061.2018055143301.hdf",
+        "stopdate": "2014-09-24",
+        "startdate": "2014-09-24",
+        "starttime": "11:50:00.000000",
+        "stoptime": "11:55:00.000000",
+        "equatortime": "12:29:32.108341",
+        "equatordate": "2014-09-24",
+        "nasaProductionDate": "2018-02-24T14:33:01.000Z",
+        "type": {
+            "SHORTNAME": {
+                "VALUE": "MYD05_L2"
+            },
+            "VERSIONID": {
+                "VALUE": 61
+            }
+        },
+        "sensor": {
+            "ASSOCIATEDSENSORSHORTNAME": {
+                "VALUE": "MODIS"
+            },
+            "ASSOCIATEDPLATFORMSHORTNAME": {
+                "VALUE": "Aqua"
+            },
+            "ASSOCIATEDINSTRUMENTSHORTNAME": {
+                "VALUE": "MODIS"
+            }
+        },
+        "lon_list": [
+            33.400624740185,
+            -1.94962275656674,
+            -1.94962275656674,
+            33.400624740185
+        ],
+        "lat_list": [
+            33.1191215258833,
+            33.1191215258833,
+            54.7103622033469,
+            54.7103622033469
+        ],
+        "min_lat": 33.1191215258833,
+        "max_lat": 54.7103622033469,
+        "min_lon": -1.94962275656674,
+        "max_lon": 33.400624740185,
+        "lon_0": 15.725500991809131,
+        "lat_0": 43.914741864615095
+    },
+    "area_def": {
+        "area_id": "modis_ir_wv",
+        "proj_id": "modis_ir_wv",
+        "name": "modis_ir_wv",
+        "proj_dict": {
+            "proj": "laea",
+            "ellps": "WGS84",
+            "lat_0": 43.914741864615095,
+            "lon_0": 15.725500991809131,
+            "datum": "WGS84",
+            "x_0": 0.0,
+            "y_0": 0.0
+        },
+        "x_size": 297,
+        "y_size": 446,
+        "area_extent": [
+            -1235627.6034191493,
+            -1159213.7452908722,
+            1562530.62456215,
+            1302111.8845846583
+        ]
+    },
+    "image_name": "wv_difference",
+    "description": "modis near ir water vapor (cm) sampled at 1 km resolution minus the modis near ir water vapor (cm) sampled at 5 km resolution",
+    "history": "wv_assign8-PA.ipynb"
+}
